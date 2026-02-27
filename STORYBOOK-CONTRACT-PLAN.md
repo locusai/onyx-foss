@@ -16,106 +16,203 @@ Storybook version baseline:
 
 ---
 
-## Progress (as of 2026-02-26)
+## Dev Notes (facts; full fidelity, no dates)
 
-### onyx-foss
+Global:
+- Canonical Storybook: 10.2.13 in onyx-foss and ike-base-replit.
+- Worktrees:
+  - onyx-foss: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/onyx-foss`
+  - ike-base-replit: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit`
+  - ike-agents: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-agents`
+- Package manager: pnpm everywhere.
+- Branch constraint: do not create new `codex/*` branches; use `topic/*` or repo‑standard prefixes.
+- Non‑suppression rule: anything emitted today must be shown (if not fully rendered, display a placeholder bubble), except when explicitly gated by a UI toggle (e.g., thinking).
 
-- ✅ Created branch: `topic/onyx-storybook-contract-chat`
-- ✅ Added Tier‑1 contract fixtures (raw + typed):
-  - `web/src/stories/Contract/fixtures/raw/onyxChatContractFixtures.ts`
-  - `web/src/stories/Contract/fixtures/index.ts`
-- ✅ Added Tier‑1 contract stories:
-  - `web/src/stories/Contract/Chat/Transcript.stories.tsx`
-    - MarkdownFixture, CustomTool, ParallelTools, SearchToolDocuments, Citations, DeepResearch, ImageGeneration, FileReader, MemoryTool, Reasoning, Stopped, Error
-  - `web/src/stories/Contract/Chat/TranscriptDemo.stories.tsx`
-    - DemoConversation
-  - Shared story-only renderer: `web/src/stories/Contract/Chat/ContractTranscriptRenderer.tsx`
-- ✅ Storybook build passes: `cd web && pnpm build-storybook` (v10.2.13)
-- ✅ Storybook-only mock added for `/api/chat/file/:fileId` so image/file fixtures render without a backend: `web/.storybook/preview.tsx`
-- ✅ Fixed MSW `onUnhandledRequest` URL parsing so static assets don’t 500: `web/.storybook/preview.tsx`
-- ✅ Timeline now supports “always expanded” rendering when `collapsible={false}` (needed for contract harness display): `web/src/app/app/message/messageComponents/timeline/AgentTimeline.tsx`
-- ✅ MCP proof-of-life: `http://localhost:6007/?path=/story/contract-onyx-chat-transcript--markdown-fixture` loaded (using port 6007 because 6006 was in use)
-- ✅ MCP screenshots captured (repo root):
-  - `onyx-storybook-contract-transcript-markdown.png`
-  - `onyx-storybook-contract-transcript-markdown-dark.png`
-  - `onyx-storybook-contract-transcript-custom-tool.png`
-  - `onyx-storybook-contract-transcript-citations.png`
-  - `onyx-storybook-contract-transcript-deep-research.png`
-  - `onyx-storybook-contract-transcript-image-generation.png`
-  - `onyx-storybook-contract-transcript-demo-conversation.png`
-  - `onyx-storybook-contract-transcript-demo-conversation-dark.png`
+Layer A — UI surface (onyx-foss + ike-base plugin):
+- onyx-foss contract fixtures + stories: `web/src/stories/Contract/**`.
+- Storybook preview mocks `/api/chat/file/:fileId` for contract images.
+- `AgentTimeline` supports `collapsible={false}` for contract harness display.
+- Plugin UI entrypoint: `packages/openclaw-onyx-chatui-plugin/src/OnyxFullChatClient.tsx`.
+- Completed UI changes and exact implementation steps are recorded in the Running Status Matrix (Complete items tables per layer).
 
-### ike-base-replit
+Layer B — Adapter/runtime (ike-base):
+- OpenClaw gateway adapter: `client/src/lib/openclaw-gateway/`.
+- Packet invariants helper: `client/src/lib/onyx-contract/validateOnyxPacketSequence.ts`.
+- Capability manifest uses `CapabilityManifest` with a `version` property (no `V1` suffix).
 
-- ✅ Storybook upgraded to 10.x (target: 10.2.13) — Phase 2 port work can start
-- ⏳ Phase 2 work will stay on the existing branch `codex/ike-chat-onyx` (pre-existing; do not create additional `codex/*` branches)
+Layer C — Integration (ike-base):
+- Integration stories live under `client/src/stories/Integrations/Onyx/*`.
+- Debug routes moved into integration storybooks (commit: `fc887ce4`).
 
-### ike-agents
-
-- ⏳ Not started
-
----
-
-## Repos + Working Directories (absolute paths for a new session)
-
-These are separate git repos/worktrees:
-
-- Upstream source UI: onyx-foss
-  - Repo root: /Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/onyx-foss
-  - Frontend root: /Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/onyx-foss/web
-  - Storybook config: /Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/onyx-foss/web/.storybook
-- Downstream app + Storybook: ike-base-replit
-  - Repo root: /Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit
-  - Storybook config: /Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/.storybook
-  - Vendored Onyx UI package: /Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin
-- Downstream agents platform: ike-agents
-  - Repo root: /Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-agents
-
-Package manager:
-
-- Use pnpm everywhere.
-
-Branch naming constraint (critical):
-
-- Do not create branches starting with codex/. Use topic/, feat/, pr/, etc.
-
-Recommended branch names (create separately in each repo):
-
-- topic/onyx-storybook-contract-chat
-- topic/onyx-storybook-contract-chat-port
-- topic/onyx-adapter-contract-align
+Validation evidence (ike-base Storybook) — how to capture:
+- Run: `direnv exec . pnpm storybook:build`.
+- Start Storybook: `direnv exec . pnpm storybook` (or repo script).
+- Open story IDs:
+  - `contract-onyx-chat-transcript--markdown-fixture`
+  - `contract-onyx-chat-transcript--custom-tool`
+  - `contract-onyx-chat-transcript--citations`
+  - `contract-onyx-chat-transcript--file-reader`
+- Capture screenshots via Playwright or browser DevTools. Store under a stable repo path (not `/tmp`) and include story name in filename.
+- Network sanity check: ensure `GET /index.json` and `GET /api/runtime-config` return 200 with no unexpected 4xx/5xx.
 
 ---
 
-## Current State (so you don’t re-discover it)
+## Running Status Matrix (by layer)
 
-### onyx-foss (web/)
+Layer A — UI (packages/openclaw-onyx-chatui-plugin)
+Scope: transcript rendering + shell/composer UI. This is the primary parity surface.
+| Functionality | Onyx (existing) | OpenClaw (status + priority + pointers) | Ike-agent |
+| --- | --- | --- | --- |
+| Transcript rendering (timeline + rich packets) | `OnyxFullChatClient.tsx` + synced timeline/renderer. | **Partial (P0)** — renders assistant/tool packets but missing system cards + timestamp labels + reasoning visibility. Feasibility: supported by existing timeline/renderer; no new renderer required. Implement in `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/OnyxFullChatClient.tsx`. | |
+| System cards | Onyx timeline/tool/reasoning renderers already support system‑style cards; adapt these. | **Missing (P0)** — map system role to system card using existing renderers (no suppression). Feasibility: supported by existing Onyx timeline renderers; no new renderer required. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/synced/app/app/message/messageComponents/renderMessageComponent.tsx`, `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/synced/app/app/message/messageComponents/timeline/`. | |
+| Timestamp labels (metadata, not inline) | `timestampLabel` exists on `OnyxFullChatTurn.user`. | **Missing (P0)** — render label outside the bubble; keep user text clean. Feasibility: supported by existing turn shape; UI-only change. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/OnyxFullChatClient.tsx`. | |
+| Thinking/reasoning visibility | Reasoning renderer exists in synced timeline. | **Missing (P0)** — emit reasoning packets in adapter and show when capability + session allow. Feasibility: supported by existing reasoning renderer; requires adapter mapping. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/synced/app/app/message/messageComponents/timeline/renderers/reasoning/ReasoningRenderer.tsx`. | |
+| Reading indicator | Not present in plugin. | **Missing (P1)** — add derived item when stream exists but empty. Feasibility: requires new UI logic (no existing component). Research: Control UI `app-scroll.ts` + `buildChatItems`. | |
+| Compaction markers | Not wired in plugin. | **Missing (P1)** — use `HistoryResult.compactionMarkers` to insert divider items. Feasibility: requires new UI logic (no existing component). Research: Control UI `groupMessages` / `buildChatItems`. | |
+| Scroll anchoring + new‑messages pill | `ChatScrollContainer` only. | **Missing (P1)** — add `useChatScrollAnchoring` (threshold 450px). Feasibility: requires new hook + pill UI. Research: Control UI `app-scroll.ts`. | |
+| Tool output sidebar | Not in plugin. | **Missing (P2)** — ToolOutputPanel + ResizableDivider. Feasibility: requires new UI components (not present in plugin). Research: Control UI `markdown-sidebar.ts`. | |
+| Header controls (session select, refresh, thinking, focus) | Not in plugin. | **Missing (P1)** — build `OnyxChatTabShell` header controls. Feasibility: requires new UI components (not present in plugin). Research: Control UI `openclaw-app` + renderChat props. | |
+| Composer input + queue + stop/new | Not in plugin. | **Missing (P0 after transcript basics)** — implement Control UI parity. Feasibility: requires new composer UI + runtime logic (not present in plugin). Research: Control UI `app-chat.ts` + composer handlers. | |
 
-Already has Storybook scaffold + first-wave stories:
+Complete items:
+| Functionality | Onyx (existing) | OpenClaw (status + pointers) | Ike-agent |
+| --- | --- | --- | --- |
+| User bubble rendering | Implemented in `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/OnyxFullChatClient.tsx`. | **Complete** — no changes. | |
+| Avatar/icon parity (implemented) | Onyx icons source: `web/src/components/icons/icons.tsx` + `web/public/*`. | **Complete** — how: update `packages/openclaw-onyx-chatui-plugin/upstream/manifest.json` (add `foss-icons`, expand `onyx-public`), run `node packages/openclaw-onyx-chatui-plugin/upstream/sync.mjs --sync`, fork `packages/openclaw-onyx-chatui-plugin/src/shims/components/icons/icons.tsx` to use `img` + `/onyx-public/*`, update `AgentAvatar.tsx` to canonical octagon + contrast. | |
+| Code-block frame spacing (implemented) | Onyx base styles in `app/app/message/custom-code-styles.css`. | **Complete** — how: patch `packages/openclaw-onyx-chatui-plugin/src/synced/app/app/message/custom-code-styles.css` with `pre` margin resets, run `pnpm --filter openclaw-onyx-chatui-plugin build:scoped-css`, add `app/app/message/custom-code-styles.css` to `synced.forks` in manifest. | |
 
-- Storybook deps in web/package.json: storybook@10.2.13, @storybook/nextjs@10.2.13
-- Config:
-  - web/.storybook/main.ts uses @storybook/nextjs
-  - web/.storybook/preview.tsx imports ../src/app/globals.css, wraps stories with web/src/stories/StoryProviders.tsx, and configures MSW handlers
-- Existing stories (mostly shell/composer/sidebar):
-  - web/src/stories/Chat/AppInputBar.stories.tsx
-  - web/src/stories/Landing/*
-  - web/src/stories/Navigation/Sidebar/*
+Layer B — Adapter/runtime (client/src/lib/openclaw-gateway)
+Scope: OpenClaw → OnyxPacket mapping + capabilities/tool catalog.
+| Functionality | Onyx (existing) | OpenClaw (status + priority + pointers) | Ike-agent |
+| --- | --- | --- | --- |
+| History fetch | `HistoryResult` supports `hasMore` + `compactionMarkers`. | **Partial (P1)** — implemented but no compaction markers/pagination. Feasibility: adapter-only change. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/OpenClawOnyxChatAdapter.ts` (`getHistory`). | |
+| Streaming + abort | `streamMessage` + `abort` in adapter interface. | **Partial (P0)** — streaming works; add reasoning packets + system mapping. Feasibility: adapter-only change. | |
+| Reasoning packets | OnyxPacket supports reasoning. | **Missing (P0)** — emit reasoning packets from `thinking` tags or structured gateway parts. Feasibility: adapter-only change. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/openclawOnyxMapper.ts`, `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/reasoningTags.ts`. | |
+| System message mapping | Message tree supports `system`. | **Missing (P0)** — map `role=system` into system card (not assistant text). Feasibility: adapter-only change. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/OpenClawOnyxChatAdapter.ts` (`buildTurnsFromHistory`). | |
+| Timestamp metadata | `timestampLabel` on turn. | **Partial (P0)** — extracted; ensure UI uses it and envelope is stripped from `user.text`. Feasibility: adapter + UI wiring. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/chatEnvelope.ts`. | |
+| Tool stream packets | OnyxPacket tool steps supported. | **Partial (P1)** — custom_tool_* packets mapped; normalize for tool cards + sidebar. Feasibility: adapter-only change. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/OpenClawOnyxChatAdapter.ts` (tool stream section). | |
+| Capabilities manifest | `CapabilityManifest` + `version` property. | **Partial (P1)** — thinking toggle false; gate from backend. Feasibility: adapter-only change. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/OpenClawOnyxChatAdapter.ts` (`getCapabilities`). | |
+| Tool catalog | Interface exists. | **Partial (P2)** — currently empty; wire from gateway when available. Feasibility: adapter-only change. Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/OpenClawOnyxChatAdapter.ts` (`getToolCatalog`). | |
 
-### ike-base-replit
+Complete items:
+| Functionality | Onyx (existing) | OpenClaw (status + pointers) | Ike-agent |
+| --- | --- | --- | --- |
+| Sessions list + labels | `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/runtime/types.ts` interface. | **Complete** — `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/lib/openclaw-gateway/OpenClawOnyxChatAdapter.ts` (`listSessions`). |  |
+Layer C — Integration (Lit/app layer)
+Scope: mount React shell from Lit + URL/persistence/external link adapters.
+| Functionality | Onyx (existing) | OpenClaw (status + priority + pointers) | Ike-agent |
+| --- | --- | --- | --- |
+| React shell mount (Next‑free) | Onyx app uses React shell in `web/src/app/app`. | **Missing (P1)** — mount `OnyxChatTabShell` from Lit host. Feasibility: requires new integration wrapper (not present). Research: `/Volumes/devel/openclaw-work/chat-ui-migration/.worktrees/ike-base-replit/client/src/components/onyx/*` (see `OpenClawOnyxChat.tsx`). | |
+| URL sync + persistence | Onyx app layer handles this. | **Missing (P1)** — implement platform adapter for `sessionKey` + settings. Feasibility: requires new integration layer code (not present). | |
+| External link opener | Onyx app utilities. | **Missing (P2)** — platform adapter for external links. Feasibility: requires new integration layer code (not present). | |
+| Integration storybooks | Contract stories exist upstream. | **Partial (P2)** — integration stories at `client/src/stories/Integrations/Onyx/*`. | |
+---
 
-- Storybook exists (currently SB 9.1.5 but being upgraded to 10.2.13 by another agent)
-- Vendored transcript renderer exists and is used downstream:
-  - packages/openclaw-onyx-chatui-plugin/src/OnyxFullChatClient.tsx
-  - Packet contract type is placement+obj (same shape as upstream): Packet re-exported as OnyxPacket
-- Debug packet fixture exists: client/src/pages/__debug/OnyxPreview.tsx
+## Current — OpenClaw parity + downstream contract stories (ike-base-replit)
 
-### ike-agents
+Focus now: transcript correctness + downstream contract stories, then composer parity.
 
-- No Storybook today.
-- Has a separate minimal UI plugin and simplified packet types (diverges from the canonical OnyxPacket union).
+Contract stories (downstream):
+- Ensure Storybook includes plugin stories glob in `ike-base-replit/.storybook/main.ts`.
+- Sync raw fixtures into the plugin via `packages/openclaw-onyx-chatui-plugin/upstream/manifest.json` + `sync.mjs --sync`.
+- Sync contract assets into `client/public/onyx-contract/` via the same sync tooling (no manual copy).
+- Add file-id resolver override in Storybook so contract images resolve to `/onyx-contract/*`.
+- Add downstream contract stories under `packages/openclaw-onyx-chatui-plugin/src/stories/Contract/Chat/*` using OnyxFullChatClient.
+
+Transcript basics (must land before composer):
+- Render system cards in `OnyxFullChatClient` (not assistant text).
+- Render `timestampLabel` outside the user bubble; user text must be clean.
+- Emit reasoning packets in the adapter; UI must show reasoning when capability + session allow.
+- Non‑suppression rule: anything emitted must be shown (placeholder bubble allowed), except when gated by a UI toggle (thinking).
+
+Composer parity (next priority after transcript basics):
+- Input box behavior + styling parity: autosize, Enter/Shift+Enter/IME, paste images → previews.
+- Stop/New session semantics.
+- Send/Queue behavior while busy.
+
+Validation (current):
+- Contract stories render deterministically in ike-base Storybook.
+- `ImageGeneration` shows images without 404s.
+- No unexpected 4xx/5xx when loading contract stories.
+- Storybook build passes for ike-base (script name as configured).
 
 ---
+
+## Next Up
+
+- Scroll anchoring + “New messages” pill.
+- Reading indicator for empty streams.
+- Compaction markers.
+- Header controls and shell (`OnyxChatTabShell`).
+- Tool output sidebar + resizable divider (including mobile overlay).
+- Capabilities gating refinement (thinking toggle + tool output panel).
+- Integration layer: Lit mount + URL sync + persistence + external link opener.
+- Integration storybooks expansion in `client/src/stories/Integrations/Onyx/*`.
+
+---
+
+## Deferred
+
+### Integration stories (ike-base-replit)
+- Add `Integration/Onyx/GatewayConnectedChat` story under `client/src/stories/Integrations/Onyx/*`.
+- Render `client/src/components/onyx/OpenClawOnyxChat.tsx` (or a minimal wrapper).
+- Use MSW or local fake gateway stream to simulate:
+  - session list + switching
+  - abort/stop
+  - reconnect/resume (if supported)
+- Default: no real backend required. Optional “real backend mode” via env var (mirror existing storybook:real-llm patterns).
+
+### Contract invariants + adapter compliance
+- Enforce terminal semantics: no packets after `stop` (or `error`), ever.
+- Tool step grouping via `placement` (`turn_index`, `tab_index`, `sub_turn_index` when applicable).
+- `stop_reason=user_cancelled` maps to “stopped” header state.
+- Extend `client/src/lib/openclaw-gateway/openclawOnyxMapper.ts` to ignore events after terminal state.
+- Use `client/src/lib/onyx-contract/validateOnyxPacketSequence.ts` to validate:
+  - stop/error ordering
+  - placement sanity
+  - parallel branch keys when present
+- Prefer contract fixtures as golden inputs for tests when possible.
+
+### ike-agents convergence
+- Replace/wrap simplified packet union to canonical OnyxPacket (placement + obj).
+- Update `packages/agent/src/onyx/gateway-packet-mapping.ts` (and related adapters) to emit canonical shapes.
+- Add invariant tests mirroring `validateOnyxPacketSequence`.
+- Acceptance: “contract fixture playback” test passes (structural invariants ok).
+
+### CI guardrails
+- `pnpm build-storybook` gate in CI for onyx-foss + ike-base.
+- Minimal visual regression (Chromatic or Playwright) for:
+  - MarkdownFixture (light/dark)
+  - Citations
+  - DeepResearch
+  - DemoConversation (light/dark)
+
+### Contract freeze log
+- Add a small markdown log (location per repo).
+- Any change to OnyxPacket shapes used by contract stories requires:
+  - fixture update
+  - screenshot update
+  - adapter compliance test update
+
+### Public API / interface changes (only if needed later)
+- ResolvedCapabilities merge rule (backend + agent + session).
+- Shared adapter interface (sessions/history/stream/abort) across backends.
+
+### Test plan (when these deferred phases start)
+- onyx-foss:
+  - `cd web && pnpm build-storybook`
+  - Optional Storybook interaction/Playwright runner
+- ike-base-replit:
+  - `pnpm storybook:build` (script name per repo)
+  - `pnpm test-storybook` / existing vitest Storybook tests
+  - New mapper compliance unit tests
+- ike-agents:
+  - `pnpm test` in affected packages
+  - New canonical packet mapping invariant tests
+
+---
+
+## Future Plan (full fidelity; retained verbatim)
 
 ## Phase 0 — Preflight + Version Alignment (do this first)
 
@@ -446,7 +543,7 @@ No production API changes are required to start the contract stories.
 
 Planned/likely interface additions (later phases, aligned with the broader consolidation plan):
 
-- A first-class CapabilityManifestV1 and a ResolvedCapabilities merge rule (backend + agent + session), used to gate UI features deterministically.
+- A first-class CapabilityManifest (with a `version` field) and a ResolvedCapabilities merge rule (backend + agent + session), used to gate UI features deterministically.
 - A shared adapter interface (sessions/history/stream/abort) suitable for multiple backends.
 
 ---
@@ -478,73 +575,3 @@ Planned/likely interface additions (later phases, aligned with the broader conso
 - Sidebars are not part of the initial contract suite (they remain as upstream-only app stories until explicitly promoted).
 
 ---
-
-## Progress Update — 2026-02-27 (Avatar/Icon small win)
-
-Scope: P0 avatar/icon parity focus in IKE Base Storybook (`http://localhost:5001`).
-
-### Synced via manifest + sync tool (no manual copy)
-
-- Manifest updates in `ike-base-replit/packages/openclaw-onyx-chatui-plugin/upstream/manifest.json`:
-  - Added target `foss-icons`:
-    - upstream: `onyx-foss/web/src/components/icons/icons.tsx`
-    - local: `ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/shims/components/icons/icons.tsx`
-  - Expanded target `onyx-public` file list to include all icon assets referenced by canonical `icons.tsx` under `onyx-foss/web/public/*`, synced to `ike-base-replit/client/public/onyx-public/*`.
-- Executed sync:
-  - `node packages/openclaw-onyx-chatui-plugin/upstream/sync.mjs --sync`
-
-### Forked files (and why)
-
-- `foss-icons:icons.tsx` is marked forked (target-level forks) to preserve IKE/Vite compatibility:
-  - Replaced `next/image` with native `<img>`.
-  - Replaced `@public/*` imports with deterministic runtime URLs under `/onyx-public/*`.
-  - Kept canonical icon exports so existing downstream imports remain stable.
-- Focused local avatar patch:
-  - `ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/synced/refresh-components/avatars/AgentAvatar.tsx`
-  - Switched relative imports to `@onyx/*`.
-  - Updated non-default agent avatar rendering to canonical octagon style (`SvgOnyxOctagon` + glyph), removing old circular placeholder look.
-  - Increased octagon/avatar glyph contrast (`text-05`/`stroke-text-05`) so the octagon is visible at timeline size.
-
-### Validation (IKE Storybook only)
-
-- Build validation:
-  - `direnv exec . pnpm storybook:build` (pass)
-- Story IDs checked on IKE Storybook (`localhost:5001`):
-  - `contract-onyx-chat-transcript--markdown-fixture` (light + dark)
-  - `contract-onyx-chat-transcript--custom-tool` (light; avatar focus)
-  - `contract-onyx-chat-transcript--citations` (light; source-tag details)
-  - `contract-onyx-chat-transcript--file-reader` (light; tool step)
-- Evidence screenshots captured:
-  - `/tmp/ike-storybook-contract-transcript-markdown-light-20260227-v2.png`
-  - `/tmp/ike-storybook-contract-transcript-markdown-dark-20260227.png`
-  - `/tmp/ike-storybook-contract-transcript-custom-tool-light-20260227.png`
-- `/tmp/ike-storybook-contract-transcript-custom-tool-light-avatar-fixed-20260227.png`
-  - `/tmp/ike-avatar-wrapper-contrast-20260227.png` (zoomed avatar proof)
-  - `/tmp/ike-storybook-contract-transcript-citations-light-details-20260227.png`
-  - `/tmp/ike-storybook-contract-transcript-file-reader-light-20260227.png`
-- Network sanity check (iframe session):
-  - No unexpected 4xx/5xx observed.
-  - Observed: `GET /index.json` 200, `GET /api/runtime-config` 200.
-
-## Progress Update — 2026-02-27 (Code block frame/header formatting)
-
-Scope: next visual gap after avatar/icon parity — code-block card/frame spacing in IKE Storybook markdown fixture.
-
-### Root cause + fix
-
-- Root cause: typography defaults were still applying `pre` top/bottom margins in IKE, which created extra spacing between the code-block header row and code frame.
-- Patched in synced source:
-  - `ike-base-replit/packages/openclaw-onyx-chatui-plugin/src/synced/app/app/message/custom-code-styles.css`
-  - Added `!important` overrides for `pre` margin/padding reset selectors used in markdown (`pre[class*="language-"]` and `.prose :where(pre)...`).
-- Regenerated scoped CSS artifacts:
-  - `direnv exec . pnpm --filter openclaw-onyx-chatui-plugin build:scoped-css`
-  - Updated generated files in plugin (`custom-code-styles.scoped.css`, `onyx.utilities.scoped.css`).
-- Marked file as forked to avoid future sync overwrite:
-  - Added `app/app/message/custom-code-styles.css` to `synced.forks` in `ike-base-replit/packages/openclaw-onyx-chatui-plugin/upstream/manifest.json`.
-
-### Validation (IKE Storybook only)
-
-- Story ID: `contract-onyx-chat-transcript--markdown-fixture` on `http://localhost:5001`.
-- Verified computed style on code-block `pre`: `marginTop=0px`, `marginBottom=0px` (previously 24px).
-- Evidence screenshot:
-  - `/tmp/ike-storybook-contract-transcript-markdown-light-codeframe-fixed-20260227.png`
