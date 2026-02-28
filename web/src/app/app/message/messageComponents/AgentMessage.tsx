@@ -1,18 +1,19 @@
+// # AI-DEV: AgentMessage intentionally delegates display-group rendering to
+// # AI-DEV: DisplayGroupRenderer to prevent drift from the contract harness path.
 "use client";
 
 import React, { useRef, RefObject, useMemo } from "react";
-import { Packet, StopReason } from "@/app/app/services/streamingModels";
+import { Packet } from "@/app/app/services/streamingModels";
 import { FullChatState } from "@/app/app/message/messageComponents/interfaces";
 import { FeedbackType } from "@/app/app/interfaces";
 import { handleCopy } from "@/app/app/message/copyingUtils";
+import { DisplayGroupRenderer } from "@/app/app/message/messageComponents/DisplayGroupRenderer";
 import { useMessageSwitching } from "@/app/app/message/messageComponents/hooks/useMessageSwitching";
-import { RendererComponent } from "@/app/app/message/messageComponents/renderMessageComponent";
 import { usePacketProcessor } from "@/app/app/message/messageComponents/timeline/hooks/usePacketProcessor";
 import { usePacedTurnGroups } from "@/app/app/message/messageComponents/timeline/hooks/usePacedTurnGroups";
 import MessageToolbar from "@/app/app/message/messageComponents/MessageToolbar";
 import { LlmDescriptor, LlmManager } from "@/lib/hooks";
 import { Message } from "@/app/app/interfaces";
-import Text from "@/refresh-components/texts/Text";
 import { AgentTimeline } from "@/app/app/message/messageComponents/timeline/AgentTimeline";
 
 // Type for the regeneration factory function passed from ChatUI
@@ -188,42 +189,16 @@ const AgentMessage = React.memo(function AgentMessage({
           }
         }}
       >
-        {pacedDisplayGroups.length > 0 && (
-          <div ref={finalAnswerRef}>
-            {pacedDisplayGroups.map((displayGroup, index) => (
-              <RendererComponent
-                key={`${displayGroup.turn_index}-${displayGroup.tab_index}`}
-                packets={displayGroup.packets}
-                chatState={effectiveChatState}
-                onComplete={() => {
-                  // Only mark complete on the last display group
-                  // Hook handles the finalAnswerComing check internally
-                  if (index === pacedDisplayGroups.length - 1) {
-                    onRenderComplete();
-                  }
-                }}
-                animate={false}
-                stopPacketSeen={stopPacketSeen}
-                stopReason={stopReason}
-              >
-                {(results) => (
-                  <>
-                    {results.map((r, i) => (
-                      <div key={i}>{r.content}</div>
-                    ))}
-                  </>
-                )}
-              </RendererComponent>
-            ))}
-          </div>
-        )}
-        {/* Show stopped message when user cancelled and no display content */}
-        {pacedDisplayGroups.length === 0 &&
-          stopReason === StopReason.USER_CANCELLED && (
-            <Text as="p" secondaryBody text04>
-              User has stopped generation
-            </Text>
-          )}
+        <div ref={finalAnswerRef}>
+          <DisplayGroupRenderer
+            displayGroups={pacedDisplayGroups}
+            chatState={effectiveChatState}
+            stopPacketSeen={stopPacketSeen}
+            stopReason={stopReason}
+            onRenderComplete={onRenderComplete}
+            animate={false}
+          />
+        </div>
       </div>
 
       {/* Feedback buttons - only show when streaming and rendering complete */}
