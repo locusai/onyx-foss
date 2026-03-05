@@ -4,8 +4,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-Install node / npm: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
-Install all dependencies: `npm i`.
+Install node: https://nodejs.org/
+Install all dependencies: `npm install`.
 
 Then, run the development server:
 
@@ -20,6 +20,14 @@ _Note:_ if you are having problems accessing the ^, try setting the `WEB_DOMAIN`
 
 > [!TIP]
 > Packages are installed automatically when switching branches after `package.json` changes with [pre-commit](https://github.com/onyx-dot-app/onyx/blob/main/CONTRIBUTING.md#formatting-and-linting) configured.
+
+## Storybook
+
+```bash
+npm run storybook
+```
+
+Open [http://localhost:6006](http://localhost:6006).
 
 ### Connecting to a Cloud Backend
 
