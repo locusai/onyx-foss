@@ -34,6 +34,17 @@ initialize({
 const preview: Preview = {
   parameters: {
     layout: "fullscreen",
+    options: {
+      storySort: {
+        order: [
+          "Onyx-OSS",
+          ["Sidebar", ["AppSidebar", "SidebarBody", "SidebarTab", "SidebarSection", "SidebarWrapper", "UserAvatarPopover"]],
+          ["Chat", ["Transcript", "TranscriptDemo"]],
+          ["Input", ["AppInputBar"]],
+          "*",
+        ],
+      },
+    },
     nextjs: {
       appDirectory: true,
     },

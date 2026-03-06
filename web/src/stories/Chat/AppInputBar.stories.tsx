@@ -44,7 +44,7 @@ function AppInputBarStory(args: AppInputBarStoryArgs) {
 }
 
 const meta = {
-  title: "Chat/AppInputBar",
+  title: "Onyx-OSS/Input/AppInputBar",
   parameters: {
     layout: "fullscreen",
   },

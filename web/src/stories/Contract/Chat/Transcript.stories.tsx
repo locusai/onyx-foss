@@ -10,7 +10,7 @@ import { contractDocuments, contractScenarios } from "@/stories/Contract/fixture
 const allDocs = Object.values(contractDocuments);
 
 const meta = {
-  title: "Contract/Onyx/Chat/Transcript",
+  title: "Onyx-OSS/Chat/Transcript",
   component: ContractSingleTurn,
   parameters: {
     layout: "fullscreen",

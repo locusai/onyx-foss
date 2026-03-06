@@ -8,7 +8,7 @@ import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
 import { SvgOnyxOctagon } from "@opal/icons";
 
 const meta = {
-  title: "Navigation/Sidebar/SidebarBody",
+  title: "Onyx-OSS/Sidebar/SidebarBody",
   component: SidebarBody,
   args: {
     scrollKey: "storybook-sidebar-body",

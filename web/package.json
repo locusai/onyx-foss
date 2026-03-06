@@ -11,6 +11,7 @@
     "build": "next build",
     "start": "next start",
     "storybook": "WATCHPACK_POLLING=true storybook dev -p 6006",
+    "storybook:oss": "WATCHPACK_POLLING=true storybook dev -p 6008",
     "build-storybook": "storybook build",
     "lint": "next lint",
     "lint:unused": "eslint --ext .js,.jsx,.ts,.tsx --rule 'unused-imports/no-unused-imports: error' --quiet --fix=false src/",

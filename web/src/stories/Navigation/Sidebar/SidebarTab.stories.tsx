@@ -4,7 +4,7 @@ import SidebarTab from "@/refresh-components/buttons/SidebarTab";
 import { SvgOnyxOctagon } from "@opal/icons";
 
 const meta = {
-  title: "Navigation/Sidebar/SidebarTab",
+  title: "Onyx-OSS/Sidebar/SidebarTab",
   component: SidebarTab,
   parameters: {
     layout: "centered",
@@ -45,4 +45,3 @@ export const Folded: Story = {
     children: "Folded",
   },
 };
-

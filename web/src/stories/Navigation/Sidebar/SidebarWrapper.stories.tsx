@@ -7,7 +7,7 @@ import SidebarTab from "@/refresh-components/buttons/SidebarTab";
 import { SvgFolderPlus, SvgOnyxOctagon } from "@opal/icons";
 
 const meta = {
-  title: "Navigation/Sidebar/SidebarWrapper",
+  title: "Onyx-OSS/Sidebar/SidebarWrapper",
   component: SidebarWrapper,
   parameters: {
     layout: "fullscreen",
@@ -70,4 +70,3 @@ export const StaticHeader: Story = {
     </SidebarWrapper>
   ),
 };
-

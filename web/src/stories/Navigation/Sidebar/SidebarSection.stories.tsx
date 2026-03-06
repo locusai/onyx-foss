@@ -6,7 +6,7 @@ import { Button } from "@opal/components";
 import { SvgMoreHorizontal, SvgOnyxOctagon } from "@opal/icons";
 
 const meta = {
-  title: "Navigation/Sidebar/SidebarSection",
+  title: "Onyx-OSS/Sidebar/SidebarSection",
   component: SidebarSection,
   parameters: {
     layout: "centered",
@@ -35,4 +35,3 @@ export const Default: Story = {
     ),
   },
 };
-

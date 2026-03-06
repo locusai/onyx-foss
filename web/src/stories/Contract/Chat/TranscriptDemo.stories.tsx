@@ -4,7 +4,7 @@ import { ContractConversation } from "@/stories/Contract/Chat/ContractTranscript
 import { demoConversationTurns } from "@/stories/Contract/fixtures";
 
 const meta = {
-  title: "Contract/Onyx/Chat/Transcript (Demo)",
+  title: "Onyx-OSS/Chat/TranscriptDemo",
   component: ContractConversation,
   parameters: {
     layout: "fullscreen",
@@ -23,4 +23,3 @@ export const DemoConversation: Story = {
     turns: demoConversationTurns,
   },
 };
-

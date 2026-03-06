@@ -4,7 +4,7 @@ import AppSidebar from "@/sections/sidebar/AppSidebar";
 import Text from "@/refresh-components/texts/Text";
 
 const meta = {
-  title: "Navigation/Sidebar/AppSidebar",
+  title: "Onyx-OSS/Sidebar/AppSidebar",
   component: AppSidebar,
   parameters: {
     layout: "fullscreen",
@@ -49,4 +49,3 @@ export const MobileOverlay: Story = {
   },
   render: () => <WithMainContent />,
 };
-

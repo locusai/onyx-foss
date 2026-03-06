@@ -5,7 +5,7 @@ import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
 import SidebarBody from "@/sections/sidebar/SidebarBody";
 
 const meta = {
-  title: "Navigation/Sidebar/UserAvatarPopover",
+  title: "Onyx-OSS/Sidebar/UserAvatarPopover",
   component: UserAvatarPopover,
   parameters: {
     layout: "fullscreen",
@@ -34,4 +34,3 @@ export const Unfolded: Story = {
 export const Folded: Story = {
   render: () => <InSidebar folded={true} />,
 };
-
