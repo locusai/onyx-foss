@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import SidebarTab from "@/refresh-components/buttons/SidebarTab";
-import { SvgOnyxOctagon } from "@opal/icons";
+import {
+  SvgActivity,
+  SvgBubbleText,
+  SvgLink,
+  SvgOnyxOctagon,
+} from "@opal/icons";
 
 const meta = {
   title: "Onyx-OSS/Sidebar/SidebarTab",
@@ -43,5 +48,38 @@ export const Folded: Story = {
     leftIcon: SvgOnyxOctagon,
     folded: true,
     children: "Folded",
+  },
+};
+
+export const RightChildren: Story = {
+  args: {
+    leftIcon: SvgBubbleText,
+    rightChildren: (
+      <span className="text-[10px] font-medium text-text-03">2</span>
+    ),
+    children: "Linked Inbox",
+  },
+};
+
+export const Href: Story = {
+  args: {
+    href: "?path=/story/onyx-oss-sidebar-sidebartab--href",
+    leftIcon: SvgLink,
+    children: "Open Session Link",
+  },
+};
+
+export const Transient: Story = {
+  args: {
+    transient: true,
+    leftIcon: SvgActivity,
+    children: "Reconnecting",
+  },
+};
+
+export const Nested: Story = {
+  args: {
+    nested: true,
+    children: "Nested Child",
   },
 };
