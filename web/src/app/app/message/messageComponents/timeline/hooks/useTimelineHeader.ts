@@ -2,11 +2,10 @@ import { useMemo } from "react";
 import { TurnGroup } from "../transformers";
 import {
   PacketType,
-  SearchToolPacket,
   StopReason,
   CustomToolStart,
+  SearchToolStart,
 } from "@/app/app/services/streamingModels";
-import { constructCurrentSearchState } from "@/app/app/message/messageComponents/timeline/renderers/search/searchStateUtils";
 
 export interface TimelineHeaderResult {
   headerText: string;
@@ -56,17 +55,10 @@ export function useTimelineHeader(
 
     // Determine header based on packet type
     if (packetType === PacketType.SEARCH_TOOL_START) {
-      const searchState = constructCurrentSearchState(
-        currentStep.packets as SearchToolPacket[]
-      );
-      let headerText: string;
-      if (searchState.hasResults && !searchState.isInternetSearch) {
-        headerText = "Reading";
-      } else {
-        headerText = searchState.isInternetSearch
-          ? "Searching the web"
-          : "Searching internal documents";
-      }
+      const searchStart = firstPacket.obj as SearchToolStart;
+      const headerText = searchStart.is_internet_search
+        ? "Searching the web"
+        : "Searching";
       return { headerText, hasPackets, userStopped };
     }
 
