@@ -5,9 +5,8 @@ import { BrainIcon } from "@/components/icons/icons";
 import {
   Packet,
   PacketType,
-  SearchToolPacket,
+  type SearchToolStart,
 } from "@/app/app/services/streamingModels";
-import { constructCurrentSearchState } from "./timeline/renderers/search/searchStateUtils";
 import {
   SvgGlobe,
   SvgSearchMenu,
@@ -17,6 +16,7 @@ import {
   SvgUser,
   SvgCircle,
   SvgBookOpen,
+  SvgFileText,
 } from "@opal/icons";
 
 /**
@@ -82,10 +82,8 @@ export function getToolName(packets: Packet[]): string {
 
   switch (firstPacket.obj.type) {
     case PacketType.SEARCH_TOOL_START: {
-      const searchState = constructCurrentSearchState(
-        packets as SearchToolPacket[]
-      );
-      return searchState.isInternetSearch ? "Web Search" : "Internal Search";
+      const start = firstPacket.obj as SearchToolStart;
+      return start.is_internet_search ? "Web Search" : "Internal Search";
     }
     case PacketType.PYTHON_TOOL_START:
       return "Code Interpreter";
@@ -97,6 +95,8 @@ export function getToolName(packets: Packet[]): string {
       );
     case PacketType.IMAGE_GENERATION_TOOL_START:
       return "Generate Image";
+    case PacketType.FILE_READER_START:
+      return "File Reader";
     case PacketType.DEEP_RESEARCH_PLAN_START:
       return "Generate plan";
     case PacketType.RESEARCH_AGENT_START:
@@ -117,10 +117,8 @@ export function getToolIcon(packets: Packet[]): JSX.Element {
 
   switch (firstPacket.obj.type) {
     case PacketType.SEARCH_TOOL_START: {
-      const searchState = constructCurrentSearchState(
-        packets as SearchToolPacket[]
-      );
-      return searchState.isInternetSearch ? (
+      const start = firstPacket.obj as SearchToolStart;
+      return start.is_internet_search ? (
         <SvgGlobe className="w-3.5 h-3.5" />
       ) : (
         <SvgSearchMenu className="w-3.5 h-3.5" />
@@ -134,6 +132,8 @@ export function getToolIcon(packets: Packet[]): JSX.Element {
       return <FiTool className="w-3.5 h-3.5" />;
     case PacketType.IMAGE_GENERATION_TOOL_START:
       return <SvgImage className="w-3.5 h-3.5" />;
+    case PacketType.FILE_READER_START:
+      return <SvgFileText className="w-3.5 h-3.5" />;
     case PacketType.DEEP_RESEARCH_PLAN_START:
       return <FiList className="w-3.5 h-3.5" />;
     case PacketType.RESEARCH_AGENT_START:
