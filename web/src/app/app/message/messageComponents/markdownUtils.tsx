@@ -143,9 +143,11 @@ export const renderMarkdown = (
   textSize: string = "text-base"
 ): JSX.Element => {
   return (
-    <div dir="auto">
+    <div
+      dir="auto"
+      className={`prose dark:prose-invert font-main-content-body max-w-full ${textSize}`}
+    >
       <ReactMarkdown
-        className={`prose dark:prose-invert font-main-content-body max-w-full ${textSize}`}
         components={markdownComponents}
         remarkPlugins={[
           remarkGfm,

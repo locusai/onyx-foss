@@ -40,7 +40,7 @@ export default function MinimalMarkdown({
         // Don't render the pre wrapper - CodeBlock handles its own wrapper
         return <>{children}</>;
       },
-      code: ({ node, inline, className, children, ...props }: any) => {
+      code: ({ node, className, children }: any) => {
         const codeText = extractCodeText(node, content, children);
         return (
           <CodeBlock className={className} codeText={codeText}>
@@ -55,11 +55,12 @@ export default function MinimalMarkdown({
       ...(components ?? {}),
     } satisfies Components;
   }, [content, components]);
+  const markdownClassName =
+    `prose max-w-full break-words text-sm dark:prose-invert ${className}`.trim();
 
   return (
-    <div style={style || {}} className={`${className}`}>
+    <div style={style || {}} className={markdownClassName}>
       <ReactMarkdown
-        className="prose dark:prose-invert max-w-full text-sm break-words"
         components={markdownComponents}
         rehypePlugins={[rehypeHighlight, rehypeKatex]}
         remarkPlugins={[
