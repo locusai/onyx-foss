@@ -5,7 +5,7 @@ import { StopReason } from "@/app/app/services/streamingModels";
 import { FullChatState } from "../interfaces";
 import { TurnGroup, TransformedStep } from "./transformers";
 import { SvgCheckCircle, SvgStopCircle } from "@opal/icons";
-import { IconProps } from "@opal/types";
+import type { IconProps } from "@opal/types";
 import {
   TimelineRendererComponent,
   TimelineRendererOutput,
