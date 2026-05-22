@@ -245,7 +245,7 @@ const QueryText = ({
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span ref={textRef} className="max-w-[10rem] truncate block">
+          <span ref={textRef as any} className="max-w-[10rem] truncate block">
             <Text
               as="span"
               {...textStyleProps}
