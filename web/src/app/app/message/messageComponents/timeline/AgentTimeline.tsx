@@ -56,6 +56,10 @@ function TimelineContainer({
   );
 }
 
+function noop() {
+  // Intentionally empty.
+}
+
 // =============================================================================
 // Main Component
 // =============================================================================
@@ -89,6 +93,8 @@ export interface AgentTimelineProps {
   generatedImageCount?: number;
   /** Tool processing duration from backend (via MESSAGE_START packet) */
   toolProcessingDuration?: number;
+  /** When streaming, the stream start time (ms since epoch) for duration display. */
+  streamingStartTime?: number;
 }
 
 /**
@@ -111,7 +117,8 @@ function areAgentTimelinePropsEqual(
     prev.chatState === next.chatState &&
     prev.isGeneratingImage === next.isGeneratingImage &&
     prev.generatedImageCount === next.generatedImageCount &&
-    prev.toolProcessingDuration === next.toolProcessingDuration
+    prev.toolProcessingDuration === next.toolProcessingDuration &&
+    prev.streamingStartTime === next.streamingStartTime
   );
 }
 
@@ -129,6 +136,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
   isGeneratingImage = false,
   generatedImageCount = 0,
   toolProcessingDuration,
+  streamingStartTime: streamingStartTimeProp,
 }: AgentTimelineProps) {
   // Header text and state flags
   const { headerText, hasPackets, userStopped } = useTimelineHeader(
@@ -161,7 +169,14 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     useTimelineExpansion(stopPacketSeen, lastTurnGroup, hasDisplayContent);
 
   // Streaming duration tracking
-  const streamingStartTime = useStreamingStartTime();
+  const storeStreamingStartTime = useStreamingStartTime();
+  const streamingStartTime = streamingStartTimeProp ?? storeStreamingStartTime;
+
+  // In some contexts (e.g. Storybook contract harness), we want the timeline to
+  // always render its expanded content. Treat `collapsible={false}` as "always
+  // expanded", while keeping production behavior unchanged.
+  const effectiveIsExpanded = collapsible ? isExpanded : true;
+  const effectiveHandleToggle = collapsible ? handleToggle : noop;
 
   // Parallel step analysis for collapsed streaming view
   const parallelActiveStep = useMemo(() => {
@@ -220,7 +235,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     hasPackets,
     hasDisplayContent,
     userStopped,
-    isExpanded,
+    isExpanded: effectiveIsExpanded,
     lastTurnGroup,
     lastStep,
     lastStepSupportsCollapsedStreaming,
@@ -251,6 +266,18 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     return RenderType.COMPACT;
   }, [lastStepIsResearchAgent, lastStepIsSearchTool]);
 
+  const completedSummaryText = useMemo(() => {
+    if (generatedImageCount > 0) {
+      return undefined;
+    }
+
+    if (headerText === "Thinking" || headerText === "Thinking...") {
+      return undefined;
+    }
+
+    return headerText;
+  }, [generatedImageCount, headerText]);
+
   // Header selection based on UI state
   const renderHeader = useCallback(() => {
     switch (uiState) {
@@ -263,8 +290,8 @@ export const AgentTimeline = React.memo(function AgentTimeline({
               activeTab={parallelActiveTab}
               onTabChange={setParallelActiveTab}
               collapsible={collapsible}
-              isExpanded={isExpanded}
-              onToggle={handleToggle}
+              isExpanded={effectiveIsExpanded}
+              onToggle={effectiveHandleToggle}
             />
           );
         }
@@ -275,8 +302,8 @@ export const AgentTimeline = React.memo(function AgentTimeline({
             headerText={headerText}
             collapsible={collapsible}
             buttonTitle={buttonTitle}
-            isExpanded={isExpanded}
-            onToggle={handleToggle}
+            isExpanded={effectiveIsExpanded}
+            onToggle={effectiveHandleToggle}
             streamingStartTime={streamingStartTime}
             toolProcessingDuration={toolProcessingDuration}
           />
@@ -287,8 +314,8 @@ export const AgentTimeline = React.memo(function AgentTimeline({
           <StoppedHeader
             totalSteps={stoppedStepsCount}
             collapsible={collapsible}
-            isExpanded={isExpanded}
-            onToggle={handleToggle}
+            isExpanded={effectiveIsExpanded}
+            onToggle={effectiveHandleToggle}
           />
         );
 
@@ -298,8 +325,9 @@ export const AgentTimeline = React.memo(function AgentTimeline({
           <CompletedHeader
             totalSteps={totalSteps}
             collapsible={collapsible}
-            isExpanded={isExpanded}
-            onToggle={handleToggle}
+            isExpanded={effectiveIsExpanded}
+            onToggle={effectiveHandleToggle}
+            summaryText={completedSummaryText}
             processingDurationSeconds={
               toolProcessingDuration ?? processingDurationSeconds
             }
@@ -322,8 +350,9 @@ export const AgentTimeline = React.memo(function AgentTimeline({
     parallelActiveTab,
     setParallelActiveTab,
     collapsible,
-    isExpanded,
-    handleToggle,
+    effectiveIsExpanded,
+    effectiveHandleToggle,
+    completedSummaryText,
     headerText,
     buttonTitle,
     streamingStartTime,
@@ -402,7 +431,7 @@ export const AgentTimeline = React.memo(function AgentTimeline({
       )}
 
       {/* Expanded timeline view */}
-      {isExpanded && (
+      {effectiveIsExpanded && (
         <div className="animate-in fade-in slide-in-from-top-2 duration-300">
           <ExpandedTimelineContent
             turnGroups={turnGroups}
