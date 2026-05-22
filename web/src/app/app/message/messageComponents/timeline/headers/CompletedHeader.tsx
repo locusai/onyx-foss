@@ -98,6 +98,7 @@ export interface CompletedHeaderProps {
   onToggle: () => void;
   processingDurationSeconds?: number;
   generatedImageCount?: number;
+  summaryText?: string | null;
   isMemoryOnly?: boolean;
   memoryText?: string | null;
   memoryOperation?: "add" | "update" | null;
@@ -113,6 +114,7 @@ export const CompletedHeader = React.memo(function CompletedHeader({
   onToggle,
   processingDurationSeconds = 0,
   generatedImageCount = 0,
+  summaryText = null,
   isMemoryOnly = false,
   memoryText = null,
   memoryOperation = null,
@@ -150,6 +152,11 @@ export const CompletedHeader = React.memo(function CompletedHeader({
     ? `Thought for ${formatDurationSeconds(processingDurationSeconds)}`
     : "Thought for some time";
 
+  const completedText =
+    typeof summaryText === "string" && summaryText.trim().length > 0
+      ? summaryText
+      : durationText;
+
   const imageText =
     generatedImageCount > 0
       ? `Generated ${generatedImageCount} ${
@@ -165,7 +172,7 @@ export const CompletedHeader = React.memo(function CompletedHeader({
     >
       <div className="flex items-center gap-2 px-[var(--timeline-header-text-padding-x)] py-[var(--timeline-header-text-padding-y)]">
         <Text as="p" mainUiAction text03>
-          {isExpanded ? durationText : imageText ?? durationText}
+          {isExpanded ? completedText : imageText ?? completedText}
         </Text>
         {memoryOperation && !isExpanded && (
           <MemoryTagWithTooltip
