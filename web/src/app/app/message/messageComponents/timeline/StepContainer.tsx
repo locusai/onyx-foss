@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { cn } from "@/lib/utils";
-import { IconProps } from "@opal/types";
+import type { IconProps } from "@opal/types";
 import { TimelineRow } from "@/app/app/message/messageComponents/timeline/primitives/TimelineRow";
 import { TimelineSurface } from "@/app/app/message/messageComponents/timeline/primitives/TimelineSurface";
 import { TimelineStepContent } from "@/app/app/message/messageComponents/timeline/primitives/TimelineStepContent";
