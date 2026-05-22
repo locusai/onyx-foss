@@ -9,6 +9,7 @@ import {
 } from "../../../services/streamingModels";
 import { MessageRenderer, RenderType } from "../interfaces";
 import { buildImgUrl } from "../../../components/files/images/utils";
+import { resolveToolDisplayLabel } from "../customToolLabels";
 
 function constructCustomToolState(packets: CustomToolPacket[]) {
   const toolStart = packets.find(
@@ -47,8 +48,9 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
   renderType,
   children,
 }) => {
-  const { toolName, responseType, data, fileIds, isRunning, isComplete } =
+  const { toolName, data, fileIds, isRunning, isComplete } =
     constructCustomToolState(packets);
+  const normalizedToolName = resolveToolDisplayLabel(toolName);
 
   useEffect(() => {
     if (isComplete) {
@@ -57,14 +59,9 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
   }, [isComplete, onComplete]);
 
   const status = useMemo(() => {
-    if (isComplete) {
-      if (responseType === "image") return `${toolName} returned images`;
-      if (responseType === "csv") return `${toolName} returned a file`;
-      return `${toolName} completed`;
-    }
-    if (isRunning) return `${toolName} running...`;
+    if (isComplete || isRunning) return normalizedToolName;
     return null;
-  }, [toolName, responseType, isComplete, isRunning]);
+  }, [normalizedToolName, isComplete, isRunning]);
 
   const icon = FiTool;
 
