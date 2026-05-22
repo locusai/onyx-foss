@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 // Size constants
 const DEFAULT_ANCHOR_OFFSET_PX = 16; // 1rem
 const DEFAULT_FADE_THRESHOLD_PX = 80; // 5rem
-const DEFAULT_BUTTON_THRESHOLD_PX = 32; // 2rem
+const DEFAULT_BUTTON_THRESHOLD_PX = 450;
 
 // Fade configuration
 const TOP_FADE_HEIGHT = "1rem";
@@ -279,6 +279,28 @@ const ChatScrollContainer = React.memo(
           setIsScrollReady(false);
           prevScrollTopRef.current = 0;
           isAtBottomRef.current = true;
+        }
+
+        if (!anchorSelector) {
+          const isInitialLoad =
+            scrolledForSessionRef.current === null || isNewSession;
+
+          const timeoutId = setTimeout(() => {
+            if (isInitialLoad && autoScrollRef.current) {
+              const targetScrollTop =
+                container.scrollHeight - container.clientHeight;
+              container.scrollTo({ top: targetScrollTop, behavior: "instant" });
+              prevScrollTopRef.current = targetScrollTop;
+              isAtBottomRef.current = true;
+            }
+
+            updateScrollState();
+            setIsScrollReady(true);
+            scrolledForSessionRef.current = sessionId ?? null;
+            prevAnchorSelectorRef.current = null;
+          }, 0);
+
+          return () => clearTimeout(timeoutId);
         }
 
         const shouldScroll =
