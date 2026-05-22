@@ -7,6 +7,8 @@ import type { Route } from "next";
 import { Section } from "@/layouts/general-layouts";
 import { WithoutStyles } from "@/types";
 
+type LineItemElement = HTMLAnchorElement | HTMLButtonElement;
+
 const buttonClassNames = {
   main: {
     normal: "line-item-button-main",
@@ -54,7 +56,7 @@ const iconClassNames = {
 
 export interface LineItemProps
   extends Omit<
-    WithoutStyles<React.HTMLAttributes<HTMLDivElement>>,
+    WithoutStyles<React.HTMLAttributes<LineItemElement>>,
     "children"
   > {
   // line-item variants
@@ -72,7 +74,7 @@ export interface LineItemProps
   description?: string;
   rightChildren?: React.ReactNode;
   href?: string;
-  ref?: React.Ref<HTMLDivElement>;
+  ref?: React.Ref<LineItemElement>;
   children?: React.ReactNode;
 }
 
@@ -159,39 +161,14 @@ export default function LineItem({
 
   const emphasisKey = emphasized ? "emphasized" : "normal";
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      (e.currentTarget as HTMLDivElement).click();
-    } else if (e.key === " ") {
-      e.preventDefault();
-    }
-    props.onKeyDown?.(e);
-  };
-
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === " ") {
-      e.preventDefault();
-      (e.currentTarget as HTMLDivElement).click();
-    }
-    props.onKeyUp?.(e);
-  };
+  const lineItemClassName = cn(
+    "flex flex-row w-full items-start p-2 rounded-08 group/LineItem gap-2 appearance-none border-0 text-left",
+    !!(children && description) ? "items-start" : "items-center",
+    buttonClassNames[variant][emphasisKey]
+  );
 
   const content = (
-    <div
-      ref={ref}
-      role="button"
-      tabIndex={0}
-      className={cn(
-        "flex flex-row w-full items-start p-2 rounded-08 group/LineItem gap-2",
-        !!(children && description) ? "items-start" : "items-center",
-        buttonClassNames[variant][emphasisKey]
-      )}
-      data-selected={selected}
-      {...props}
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
-    >
+    <>
       {Icon && (
         <div
           className={cn(
@@ -237,9 +214,32 @@ export default function LineItem({
           </Section>
         ) : null}
       </Section>
-    </div>
+    </>
   );
 
-  if (!href) return content;
-  return <Link href={href as Route}>{content}</Link>;
+  if (href) {
+    return (
+      <Link
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={href as Route}
+        className={lineItemClassName}
+        data-selected={selected}
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      ref={ref as React.Ref<HTMLButtonElement>}
+      className={lineItemClassName}
+      data-selected={selected}
+      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      type="button"
+    >
+      {content}
+    </button>
+  );
 }
