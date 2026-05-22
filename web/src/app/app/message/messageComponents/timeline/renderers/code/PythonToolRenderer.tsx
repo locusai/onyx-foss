@@ -11,31 +11,8 @@ import {
   RenderType,
 } from "@/app/app/message/messageComponents/interfaces";
 import { CodeBlock } from "@/app/app/message/CodeBlock";
-import hljs from "highlight.js/lib/core";
-import python from "highlight.js/lib/languages/python";
 import { SvgTerminal } from "@opal/icons";
 import FadingEdgeContainer from "@/refresh-components/FadingEdgeContainer";
-
-// Register Python language for highlighting
-hljs.registerLanguage("python", python);
-
-// Component to render syntax-highlighted Python code
-function HighlightedPythonCode({ code }: { code: string }) {
-  const highlightedHtml = useMemo(() => {
-    try {
-      return hljs.highlight(code, { language: "python" }).value;
-    } catch {
-      return code;
-    }
-  }, [code]);
-
-  return (
-    <span
-      dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-      className="hljs"
-    />
-  );
-}
 
 // Helper function to construct current Python execution state
 function constructCurrentPythonState(packets: PythonToolPacket[]) {
@@ -83,7 +60,7 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
   children,
 }) => {
   const { code, stdout, stderr, fileIds, isExecuting, isComplete, hasError } =
-    constructCurrentPythonState(packets);
+    useMemo(() => constructCurrentPythonState(packets), [packets]);
 
   useEffect(() => {
     if (isComplete) {
@@ -129,7 +106,7 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
       {code && (
         <div className="prose max-w-full">
           <CodeBlock className="language-python" codeText={code.trim()}>
-            <HighlightedPythonCode code={code.trim()} />
+            {code.trim()}
           </CodeBlock>
         </div>
       )}

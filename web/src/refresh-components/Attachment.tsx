@@ -1,23 +1,47 @@
 import Text from "@/refresh-components/texts/Text";
-import { Button } from "@opal/components";
-import { SvgFileText, SvgMaximize2 } from "@opal/icons";
+import Button from "@/refresh-components/buttons/Button";
+import {
+  ExpandTwoIcon,
+  FileIcon,
+  TriangleAlertIcon,
+} from "@/components/icons/icons";
+import { cn } from "@/lib/utils";
+
+export type AttachmentVariant = "document" | "unavailable";
+
 export interface AttachmentsProps {
   fileName: string;
   open?: () => void;
+  variant?: AttachmentVariant;
 }
 
-export default function Attachments({ fileName, open }: AttachmentsProps) {
+export default function Attachments({
+  fileName,
+  open,
+  variant = "document",
+}: AttachmentsProps) {
+  const isUnavailable = variant === "unavailable";
+
   return (
-    <div className="flex items-center border bg-background-tint-00 rounded-12 p-1 gap-1">
+    <div
+      className={cn(
+        "flex items-center gap-1 rounded-12 border bg-background-tint-00 p-1",
+        isUnavailable && "border-dashed"
+      )}
+    >
       <div className="p-2 bg-background-tint-01 rounded-08">
-        <SvgFileText className="w-[1.25rem] h-[1.25rem] stroke-text-02" />
+        {isUnavailable ? (
+          <TriangleAlertIcon className="h-[1.25rem] w-[1.25rem] text-text-03" />
+        ) : (
+          <FileIcon className="h-[1.25rem] w-[1.25rem] text-text-03" />
+        )}
       </div>
-      <div className="flex flex-col px-2">
-        <Text as="p" secondaryAction>
+      <div className="flex min-w-0 flex-col px-2">
+        <Text as="p" secondaryAction className="break-all">
           {fileName}
         </Text>
         <Text as="p" secondaryBody text03>
-          Document
+          {isUnavailable ? "Unavailable in history" : "Document"}
         </Text>
       </div>
 
@@ -25,9 +49,9 @@ export default function Attachments({ fileName, open }: AttachmentsProps) {
         <Button
           aria-label="Expand document"
           onClick={open}
-          icon={SvgMaximize2}
-          prominence="tertiary"
-          size="sm"
+          rightIcon={ExpandTwoIcon}
+          tertiary
+          size="md"
         />
       )}
     </div>
