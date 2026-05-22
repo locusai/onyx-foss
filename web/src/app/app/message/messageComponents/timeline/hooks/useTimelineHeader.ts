@@ -6,6 +6,7 @@ import {
   CustomToolStart,
   SearchToolStart,
 } from "@/app/app/services/streamingModels";
+import { formatToolActivityLabel } from "../../customToolLabels";
 
 export interface TimelineHeaderResult {
   headerText: string;
@@ -81,7 +82,7 @@ export function useTimelineHeader(
     if (packetType === PacketType.CUSTOM_TOOL_START) {
       const toolName = (firstPacket.obj as CustomToolStart).tool_name;
       return {
-        headerText: toolName ? `Executing ${toolName}` : "Executing tool",
+        headerText: formatToolActivityLabel(toolName),
         hasPackets,
         userStopped,
       };
