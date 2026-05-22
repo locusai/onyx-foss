@@ -1,3 +1,5 @@
+/* # AI-DEV: This file is forked for Onyx code-block spacing parity. */
+/* # AI-DEV: Keep it in synced.forks and rebuild scoped CSS after edits. */
 /* Light mode syntax highlighting (Atom One Light) */
 .hljs {
   color: #383a42 !important;
@@ -151,14 +153,14 @@
 }
 
 pre[class*="language-"] {
-  padding: 0px; /* Override padding */
-  margin: 0px;
+  padding: 0px !important; /* Override typography plugin padding */
+  margin: 0px !important;
   border: none;
 }
 
 .prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-  padding: 0px; /* Override padding */
-  margin: 0px;
+  padding: 0px !important; /* Override typography plugin padding */
+  margin: 0px !important;
 
   /* Override scrollbar style to match highlight.js theme */
   ::-webkit-scrollbar {

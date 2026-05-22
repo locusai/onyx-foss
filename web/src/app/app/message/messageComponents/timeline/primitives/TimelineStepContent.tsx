@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { cn } from "@/lib/utils";
 import { SvgFold, SvgExpand } from "@opal/icons";
-import { IconProps } from "@opal/types";
+import type { IconProps } from "@opal/types";
 import Button from "@/refresh-components/buttons/Button";
 import { Button as OpalButton } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
