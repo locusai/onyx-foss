@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { IconProps } from "@opal/types";
+import type { IconProps } from "@opal/types";
 import { StepContainer } from "./StepContainer";
 import {
   TimelineRendererOutput,

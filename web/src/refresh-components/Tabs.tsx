@@ -10,9 +10,10 @@ import React, {
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { cn, mergeRefs } from "@/lib/utils";
 import SimpleTooltip from "@/refresh-components/SimpleTooltip";
-import { WithoutStyles } from "@/types";
-import { Section, SectionProps } from "@/layouts/general-layouts";
-import { IconProps } from "@opal/types";
+import type { WithoutStyles } from "@/types";
+import { Section } from "@/layouts/general-layouts";
+import type { SectionProps } from "@/layouts/general-layouts";
+import type { IconProps } from "@opal/types";
 import { SvgChevronLeft, SvgChevronRight } from "@opal/icons";
 import Text from "./texts/Text";
 import { Button } from "@opal/components";
