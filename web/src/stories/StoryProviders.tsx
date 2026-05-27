@@ -1,23 +1,35 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { AuthType } from "@/lib/constants";
-import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import AppProvider from "@/providers/AppProvider";
 import { ProjectsProvider } from "@/providers/ProjectsContext";
-import { storybookSettings, storybookUser } from "@/stories/fixtures";
+import { MODAL_ROOT_ID } from "@/lib/constants";
+import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { PHProvider } from "@/app/providers";
+import { fixtures } from "@/stories/fixtures";
+import type { AuthTypeMetadata } from "@/lib/userSS";
+import type { CombinedSettings } from "@/interfaces/settings";
+import type { User } from "@/lib/types";
 
-interface StoryProvidersProps {
+type StorybookTheme = "light" | "dark";
+
+export interface StoryProvidersProps {
   children: ReactNode;
-  forcedTheme?: "light" | "dark";
+  forcedTheme?: StorybookTheme;
   folded?: boolean;
+  user?: User | null;
+  settings?: CombinedSettings;
+  authTypeMetadata?: AuthTypeMetadata;
 }
 
 export default function StoryProviders({
   children,
   forcedTheme = "light",
-  folded = false,
+  folded,
+  user = fixtures.user,
+  settings = fixtures.settings,
+  authTypeMetadata = fixtures.authTypeMetadata,
 }: StoryProvidersProps) {
   return (
     <ThemeProvider
@@ -26,24 +38,24 @@ export default function StoryProviders({
       enableSystem={false}
       disableTransitionOnChange
     >
-      <TooltipProvider>
-        <AppProvider
-          user={storybookUser}
-          settings={storybookSettings}
-          folded={folded}
-          authTypeMetadata={{
-            authType: AuthType.BASIC,
-            autoRedirect: false,
-            requiresVerification: false,
-            anonymousUserEnabled: true,
-            passwordMinLength: 8,
-            hasUsers: true,
-            oauthEnabled: false,
-          }}
-        >
-          <ProjectsProvider>{children}</ProjectsProvider>
-        </AppProvider>
-      </TooltipProvider>
+      <div className="text-text min-h-screen bg-background relative font-hanken">
+        <TooltipProvider>
+          <PHProvider>
+            <AppProvider
+              authTypeMetadata={authTypeMetadata}
+              user={user}
+              settings={settings}
+              folded={folded}
+            >
+              <ProjectsProvider>
+                <div id={MODAL_ROOT_ID} className="h-screen w-screen">
+                  {children}
+                </div>
+              </ProjectsProvider>
+            </AppProvider>
+          </PHProvider>
+        </TooltipProvider>
+      </div>
     </ThemeProvider>
   );
 }
