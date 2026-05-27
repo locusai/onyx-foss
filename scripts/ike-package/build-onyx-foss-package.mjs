@@ -146,6 +146,10 @@ function main() {
     description: "LocusAI carried Onyx FOSS source package for IKE hydration",
     license: "SEE LICENSE IN LICENSE",
     type: "module",
+    repository: {
+      type: "git",
+      url: "git+https://github.com/locusai/onyx-foss.git",
+    },
     files: [
       "web/src",
       "web/lib/opal/src",

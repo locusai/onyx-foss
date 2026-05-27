@@ -63,16 +63,19 @@ jobs:
             exit 1
           fi
 
-      - name: Ensure version is not already published
+      - name: Resolve package publication state
+        id: package-state
         shell: bash
         run: |
           set -euo pipefail
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           if npm view "@locusai/onyx-foss@${TAG_VERSION}" version --registry "https://npm.pkg.github.com" >/dev/null 2>&1; then
             echo "@locusai/onyx-foss@${TAG_VERSION} is already published on GitHub Packages."
-            exit 1
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Publishing @locusai/onyx-foss@${TAG_VERSION}"
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
           fi
-          echo "Publishing @locusai/onyx-foss@${TAG_VERSION}"
 
       - name: Build package tarball
         id: build-package
@@ -128,10 +131,25 @@ jobs:
           set -euo pipefail
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           TARBALL_PATH="${PUBLISH_TARBALL_PATH}"
-          if [ -n "${NPM_PUBLISH_DIST_TAG:-}" ]; then
-            npm publish "$TARBALL_PATH" --ignore-scripts --tag "$NPM_PUBLISH_DIST_TAG" --registry "https://npm.pkg.github.com"
+          if [ "${PACKAGE_ALREADY_PUBLISHED:-}" = "true" ]; then
+            echo "@locusai/onyx-foss@${TAG_VERSION} already published; ensuring dist-tags only."
           else
-            npm publish "$TARBALL_PATH" --ignore-scripts --registry "https://npm.pkg.github.com"
+            set +e
+            if [ -n "${NPM_PUBLISH_DIST_TAG:-}" ]; then
+              PUBLISH_OUTPUT="$(npm publish "$TARBALL_PATH" --ignore-scripts --tag "$NPM_PUBLISH_DIST_TAG" --registry "https://npm.pkg.github.com" 2>&1)"
+            else
+              PUBLISH_OUTPUT="$(npm publish "$TARBALL_PATH" --ignore-scripts --registry "https://npm.pkg.github.com" 2>&1)"
+            fi
+            PUBLISH_EXIT=$?
+            set -e
+            echo "${PUBLISH_OUTPUT}"
+            if [ "${PUBLISH_EXIT}" -ne 0 ]; then
+              if echo "${PUBLISH_OUTPUT}" | grep -q "Cannot publish over existing version"; then
+                echo "Version already published; treating publish as success."
+              else
+                exit "${PUBLISH_EXIT}"
+              fi
+            fi
           fi
           if [ -n "${NPM_BASE_DIST_TAG:-}" ]; then
             npm dist-tag add "@locusai/onyx-foss@${TAG_VERSION}" "$NPM_BASE_DIST_TAG" --registry "https://npm.pkg.github.com"
@@ -141,3 +159,4 @@ jobs:
           NPM_PUBLISH_DIST_TAG: ${{ steps.resolve-publish-tag.outputs.dist_tag }}
           NPM_BASE_DIST_TAG: ${{ steps.resolve-publish-tag.outputs.base_dist_tag }}
           PUBLISH_TARBALL_PATH: ${{ steps.build-package.outputs.path }}
+          PACKAGE_ALREADY_PUBLISHED: ${{ steps.package-state.outputs.already_published }}
