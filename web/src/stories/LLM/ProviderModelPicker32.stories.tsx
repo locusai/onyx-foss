@@ -18,7 +18,10 @@ import Switch from "@/refresh-components/inputs/Switch";
 import Modal from "@/refresh-components/Modal";
 import Text from "@/refresh-components/texts/Text";
 import { cn } from "@/lib/utils";
-import { llmProviders as fixtureProviders } from "@/stories/fixtures";
+import {
+  storybookDefaultOpenClawLlmCatalogVersion,
+  storybookOpenClawLlmCatalogVersions,
+} from "@/stories/fixtures/llm";
 import { Content, ContentAction } from "@opal/layouts";
 import {
   SvgArrowExchange,
@@ -93,107 +96,28 @@ type ProviderCatalogEntry = {
   models: ModelConfiguration[];
 };
 
-const providerCatalog: ProviderCatalogEntry[] = [
-  {
-    provider: "openai",
-    productName: "GPT",
-    companyName: "OpenAI",
-    models: fixtureProviders[0]!.model_configurations,
-  },
-  {
-    provider: "anthropic",
-    productName: "Claude",
-    companyName: "Anthropic",
-    models: [
-      ...fixtureProviders[1]!.model_configurations,
-      {
-        name: "claude-opus-4-7-20260219",
-        display_name: "Claude Opus 4.7",
-        is_visible: true,
-        max_input_tokens: 200000,
-        supports_image_input: true,
-        supports_reasoning: false,
-      },
-    ],
-  },
-  {
-    provider: "openrouter",
-    productName: "OpenRouter",
-    companyName: "OpenRouter",
-    models: fixtureProviders[2]!.model_configurations,
-  },
-  {
-    provider: "ollama_chat",
-    productName: "Ollama",
-    companyName: "Ollama",
-    models: [
-      {
-        name: "llama3.3:70b",
-        display_name: "Llama 3.3 70B",
-        is_visible: true,
-        max_input_tokens: 128000,
-        supports_image_input: false,
-        supports_reasoning: false,
-      },
-      {
-        name: "qwen3:32b",
-        display_name: "Qwen3 32B",
-        is_visible: false,
-        max_input_tokens: 128000,
-        supports_image_input: false,
-        supports_reasoning: true,
-      },
-    ],
-  },
-  {
-    provider: "openai_compatible",
-    productName: "OpenAI-Compatible",
-    companyName: "Custom endpoint",
-    models: [
-      {
-        name: "local-default",
-        display_name: "Local default",
-        is_visible: true,
-        max_input_tokens: 128000,
-        supports_image_input: false,
-        supports_reasoning: false,
-      },
-    ],
-  },
-  {
-    provider: "bifrost",
-    productName: "Bifrost",
-    companyName: "Bifrost gateway",
-    models: [
-      {
-        name: "bifrost/openai/gpt-4o-mini",
-        display_name: "GPT-4o mini",
-        is_visible: true,
-        max_input_tokens: 128000,
-        supports_image_input: true,
-        supports_reasoning: false,
-      },
-      {
-        name: "bifrost/anthropic/claude-sonnet-4",
-        display_name: "Claude Sonnet 4",
-        is_visible: true,
-        max_input_tokens: 200000,
-        supports_image_input: true,
-        supports_reasoning: false,
-      },
-    ],
-  },
-];
+function providerCatalogFromProviders(
+  providers: LLMProviderDescriptor[]
+): ProviderCatalogEntry[] {
+  return providers.map((provider) => ({
+    provider: provider.provider,
+    productName: provider.provider_display_name || provider.name,
+    companyName:
+      provider.name || provider.provider_display_name || provider.provider,
+    models: provider.model_configurations,
+  }));
+}
 
-function catalogEntry(provider: string) {
-  return (
-    providerCatalog.find((entry) => entry.provider === provider) ?? {
-      provider,
-      productName: provider,
-      companyName: provider,
-      models: [],
-    }
-  );
+function catalogEntryFromProvider(
+  provider: LLMProviderDescriptor
+): ProviderCatalogEntry {
+  return {
+    provider: provider.provider,
+    productName: provider.provider_display_name || provider.name,
+    companyName:
+      provider.name || provider.provider_display_name || provider.provider,
+    models: provider.model_configurations,
+  };
 }
 
 function cloneProvider(provider: LLMProviderDescriptor): LLMProviderDescriptor {
@@ -208,7 +132,9 @@ function cloneProvider(provider: LLMProviderDescriptor): LLMProviderDescriptor {
   };
 }
 
-function providerFromCatalog(entry: ProviderCatalogEntry): LLMProviderDescriptor {
+function providerFromCatalog(
+  entry: ProviderCatalogEntry
+): LLMProviderDescriptor {
   const defaultModel = entry.models.find((model) => model.is_visible);
   return {
     name: entry.companyName,
@@ -242,7 +168,7 @@ function ExistingProviderCard({
   onConfigure,
   onDelete,
 }: ProviderCardProps) {
-  const entry = catalogEntry(provider.provider);
+  const entry = catalogEntryFromProvider(provider);
 
   return (
     <StorySelectCard selected={selected} onClick={onConfigure}>
@@ -333,7 +259,7 @@ function ProviderSetupModal({
   onOpenChange,
   onSave,
 }: ProviderSetupModalProps) {
-  const entry = catalogEntry(provider.provider);
+  const entry = catalogEntryFromProvider(provider);
   const [draft, setDraft] = useState(() => cloneProvider(provider));
   const [autoUpdate, setAutoUpdate] = useState(true);
   const [newModelName, setNewModelName] = useState("");
@@ -738,12 +664,30 @@ function ProviderDeleteModal({
   );
 }
 
-function LanguageModelsConfiguration32() {
+interface LanguageModelsConfiguration32Props {
+  catalogVersionId?: string;
+}
+
+function LanguageModelsConfiguration32({
+  catalogVersionId = storybookDefaultOpenClawLlmCatalogVersion.id,
+}: LanguageModelsConfiguration32Props) {
+  const catalogVersion =
+    storybookOpenClawLlmCatalogVersions.find(
+      (version) => version.id === catalogVersionId
+    ) ?? storybookDefaultOpenClawLlmCatalogVersion;
+  const fixtureProviders = catalogVersion.providers;
+  const providerCatalog = useMemo(
+    () => providerCatalogFromProviders(fixtureProviders),
+    [fixtureProviders]
+  );
+
   const [providers, setProviders] = useState<LLMProviderDescriptor[]>(() =>
     fixtureProviders.slice(0, 2).map(cloneProvider)
   );
   const [defaultValue, setDefaultValue] = useState(
-    `${fixtureProviders[0]!.provider}:${fixtureProviders[0]!.default_model_name}`
+    `${fixtureProviders[0]!.provider}:${
+      fixtureProviders[0]!.default_model_name
+    }`
   );
   const [activeProvider, setActiveProvider] =
     useState<LLMProviderDescriptor | null>(null);
@@ -797,26 +741,26 @@ function LanguageModelsConfiguration32() {
               title="Default Model"
               description="This model will be used by Onyx by default in your chats."
             >
-            <InputSelect value={defaultValue} onValueChange={setDefaultValue}>
-              <InputSelect.Trigger placeholder="Select a default model" />
-              <InputSelect.Content>
-                {providers.map((provider) => (
-                  <InputSelect.Group key={provider.provider}>
-                    <InputSelect.Label>{provider.name}</InputSelect.Label>
-                    {provider.model_configurations
-                      .filter((model) => model.is_visible)
-                      .map((model) => (
-                        <InputSelect.Item
-                          key={`${provider.provider}:${model.name}`}
-                          value={`${provider.provider}:${model.name}`}
-                        >
-                          {modelLabel(model)}
-                        </InputSelect.Item>
-                      ))}
-                  </InputSelect.Group>
-                ))}
-              </InputSelect.Content>
-            </InputSelect>
+              <InputSelect value={defaultValue} onValueChange={setDefaultValue}>
+                <InputSelect.Trigger placeholder="Select a default model" />
+                <InputSelect.Content>
+                  {providers.map((provider) => (
+                    <InputSelect.Group key={provider.provider}>
+                      <InputSelect.Label>{provider.name}</InputSelect.Label>
+                      {provider.model_configurations
+                        .filter((model) => model.is_visible)
+                        .map((model) => (
+                          <InputSelect.Item
+                            key={`${provider.provider}:${model.name}`}
+                            value={`${provider.provider}:${model.name}`}
+                          >
+                            {modelLabel(model)}
+                          </InputSelect.Item>
+                        ))}
+                    </InputSelect.Group>
+                  ))}
+                </InputSelect.Content>
+              </InputSelect>
             </StoryInputHorizontal>
           </StoryCard>
 
@@ -826,18 +770,18 @@ function LanguageModelsConfiguration32() {
               sizePreset="main-content"
               variant="section"
             />
-          <div className="flex flex-col gap-2">
-            {providers.map((provider) => (
-              <ExistingProviderCard
-                key={provider.provider}
-                provider={provider}
-                selected={activeProvider?.provider === provider.provider}
-                isDefault={defaultProviderKey === provider.provider}
-                onConfigure={() => setActiveProvider(cloneProvider(provider))}
-                onDelete={() => setDeleteProvider(provider)}
-              />
-            ))}
-          </div>
+            <div className="flex flex-col gap-2">
+              {providers.map((provider) => (
+                <ExistingProviderCard
+                  key={provider.provider}
+                  provider={provider}
+                  selected={activeProvider?.provider === provider.provider}
+                  isDefault={defaultProviderKey === provider.provider}
+                  onConfigure={() => setActiveProvider(cloneProvider(provider))}
+                  onDelete={() => setDeleteProvider(provider)}
+                />
+              ))}
+            </div>
           </section>
 
           <div className="border-t border-border-01" />
@@ -849,37 +793,39 @@ function LanguageModelsConfiguration32() {
               sizePreset="main-content"
               variant="section"
             />
-          <div className="grid grid-cols-2 gap-2">
-            {availableProviderCatalog.map((entry) => (
-              <NewProviderCard
-                key={entry.provider}
-                entry={entry}
-                onConfigure={() => setActiveProvider(providerFromCatalog(entry))}
-              />
-            ))}
-          </div>
+            <div className="grid grid-cols-2 gap-2">
+              {availableProviderCatalog.map((entry) => (
+                <NewProviderCard
+                  key={entry.provider}
+                  entry={entry}
+                  onConfigure={() =>
+                    setActiveProvider(providerFromCatalog(entry))
+                  }
+                />
+              ))}
+            </div>
           </section>
 
-        {activeProvider && (
-          <ProviderSetupModal
-            key={activeProvider.provider}
-            provider={activeProvider}
-            open={!!activeProvider}
-            onOpenChange={(open) => {
-              if (!open) setActiveProvider(null);
-            }}
-            onSave={upsertProvider}
-          />
-        )}
+          {activeProvider && (
+            <ProviderSetupModal
+              key={activeProvider.provider}
+              provider={activeProvider}
+              open={!!activeProvider}
+              onOpenChange={(open) => {
+                if (!open) setActiveProvider(null);
+              }}
+              onSave={upsertProvider}
+            />
+          )}
 
-        <ProviderDeleteModal
-          provider={deleteProvider}
-          open={!!deleteProvider}
-          onOpenChange={(open) => {
-            if (!open) setDeleteProvider(null);
-          }}
-          onDelete={() => deleteProvider && removeProvider(deleteProvider)}
-        />
+          <ProviderDeleteModal
+            provider={deleteProvider}
+            open={!!deleteProvider}
+            onOpenChange={(open) => {
+              if (!open) setDeleteProvider(null);
+            }}
+            onDelete={() => deleteProvider && removeProvider(deleteProvider)}
+          />
         </SettingsLayouts.Body>
       </SettingsLayouts.Root>
     </main>
@@ -898,4 +844,20 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const IntendedUse: Story = {};
+export const IntendedUse: Story = {
+  args: {
+    catalogVersionId: storybookDefaultOpenClawLlmCatalogVersion.id,
+  },
+  argTypes: {
+    catalogVersionId: {
+      control: "select",
+      options: storybookOpenClawLlmCatalogVersions.map((version) => version.id),
+    },
+  },
+  render: (args) => (
+    <LanguageModelsConfiguration32
+      key={args.catalogVersionId}
+      catalogVersionId={args.catalogVersionId}
+    />
+  ),
+};
