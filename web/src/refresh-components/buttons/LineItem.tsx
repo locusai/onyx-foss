@@ -18,6 +18,10 @@ const buttonClassNames = {
     normal: "line-item-button-strikethrough",
     emphasized: "line-item-button-strikethrough-emphasized",
   },
+  disabled: {
+    normal: "line-item-button-disabled",
+    emphasized: "line-item-button-disabled-emphasized",
+  },
   danger: {
     normal: "line-item-button-danger",
     emphasized: "line-item-button-danger-emphasized",
@@ -39,6 +43,7 @@ const buttonClassNames = {
 const textClassNames = {
   main: "line-item-text-main",
   strikethrough: "line-item-text-strikethrough",
+  disabled: "line-item-text-disabled",
   danger: "line-item-text-danger",
   action: "line-item-text-action",
   muted: "line-item-text-muted",
@@ -48,6 +53,7 @@ const textClassNames = {
 const iconClassNames = {
   main: "line-item-icon-main",
   strikethrough: "line-item-icon-strikethrough",
+  disabled: "line-item-icon-disabled",
   danger: "line-item-icon-danger",
   action: "line-item-icon-action",
   muted: "line-item-icon-muted",
@@ -61,6 +67,7 @@ export interface LineItemProps
   > {
   // line-item variants
   strikethrough?: boolean;
+  disabled?: boolean;
   danger?: boolean;
   action?: boolean;
   muted?: boolean;
@@ -71,6 +78,7 @@ export interface LineItemProps
 
   selected?: boolean;
   icon?: React.FunctionComponent<IconProps>;
+  strokeIcon?: boolean;
   description?: string;
   rightChildren?: React.ReactNode;
   href?: string;
@@ -133,12 +141,14 @@ export interface LineItemProps
 export default function LineItem({
   selected,
   strikethrough,
+  disabled,
   danger,
   action,
   muted,
   skeleton,
   emphasized,
   icon: Icon,
+  strokeIcon = true,
   description,
   children,
   rightChildren,
@@ -146,18 +156,20 @@ export default function LineItem({
   ref,
   ...props
 }: LineItemProps) {
-  // Determine variant (mutually exclusive, with priority order: strikethrough > danger > action > muted > main)
+  // Determine variant (mutually exclusive, with priority order: strikethrough > disabled > danger > action > muted > main)
   const variant = strikethrough
     ? "strikethrough"
-    : danger
-      ? "danger"
-      : action
-        ? "action"
-        : muted
-          ? "muted"
-          : skeleton
-            ? "skeleton"
-            : "main";
+    : disabled
+      ? "disabled"
+      : danger
+        ? "danger"
+        : action
+          ? "action"
+          : muted
+            ? "muted"
+            : skeleton
+              ? "skeleton"
+              : "main";
 
   const emphasisKey = emphasized ? "emphasized" : "normal";
 
@@ -176,7 +188,12 @@ export default function LineItem({
             !!(children && description) && "mt-0.5"
           )}
         >
-          <Icon className={cn("h-[1rem] w-[1rem]", iconClassNames[variant])} />
+          <Icon
+            className={cn(
+              "h-[1rem] w-[1rem]",
+              strokeIcon && iconClassNames[variant]
+            )}
+          />
         </div>
       )}
       <Section alignItems="start" gap={0}>
@@ -236,6 +253,7 @@ export default function LineItem({
       ref={ref as React.Ref<HTMLButtonElement>}
       className={lineItemClassName}
       data-selected={selected}
+      disabled={disabled}
       {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
       type="button"
     >
