@@ -107,7 +107,7 @@ export default function ShadowDiv({
   return (
     <div className="relative">
       <div
-        ref={containerRef}
+        ref={containerRef as React.Ref<HTMLDivElement>}
         className={cn("overflow-y-auto", className)}
         {...props}
       >
