@@ -1,13 +1,13 @@
-import React from "react";
-import { cn } from "@/lib/utils";
-import type { IconProps } from "@opal/types";
-import Truncated from "@/refresh-components/texts/Truncated";
-import Link from "next/link";
-import type { Route } from "next";
-import { Section } from "@/layouts/general-layouts";
-import { WithoutStyles } from "@/types";
+import React from "react"
+import { cn } from "@/lib/utils"
+import type { IconProps } from "@opal/types"
+import Truncated from "@/refresh-components/texts/Truncated"
+import Link from "next/link"
+import type { Route } from "next"
+import { Section } from "@/layouts/general-layouts"
+import { WithoutStyles } from "@/types"
 
-type LineItemElement = HTMLAnchorElement | HTMLButtonElement;
+type LineItemElement = HTMLAnchorElement | HTMLButtonElement
 
 const buttonClassNames = {
   main: {
@@ -38,7 +38,7 @@ const buttonClassNames = {
     normal: "line-item-button-skeleton",
     emphasized: "line-item-button-skeleton-emphasized",
   },
-} as const;
+} as const
 
 const textClassNames = {
   main: "line-item-text-main",
@@ -48,7 +48,7 @@ const textClassNames = {
   action: "line-item-text-action",
   muted: "line-item-text-muted",
   skeleton: "line-item-text-skeleton",
-} as const;
+} as const
 
 const iconClassNames = {
   main: "line-item-icon-main",
@@ -58,7 +58,7 @@ const iconClassNames = {
   action: "line-item-icon-action",
   muted: "line-item-icon-muted",
   skeleton: "line-item-icon-skeleton",
-} as const;
+} as const
 
 export interface LineItemProps
   extends Omit<
@@ -66,24 +66,24 @@ export interface LineItemProps
     "children"
   > {
   // line-item variants
-  strikethrough?: boolean;
-  disabled?: boolean;
-  danger?: boolean;
-  action?: boolean;
-  muted?: boolean;
-  skeleton?: boolean;
+  strikethrough?: boolean
+  disabled?: boolean
+  danger?: boolean
+  action?: boolean
+  muted?: boolean
+  skeleton?: boolean
 
   // modifier (makes the background more pronounced when selected).
-  emphasized?: boolean;
+  emphasized?: boolean
 
-  selected?: boolean;
-  icon?: React.FunctionComponent<IconProps>;
-  strokeIcon?: boolean;
-  description?: string;
-  rightChildren?: React.ReactNode;
-  href?: string;
-  ref?: React.Ref<LineItemElement>;
-  children?: React.ReactNode;
+  selected?: boolean
+  icon?: React.FunctionComponent<IconProps>
+  strokeIcon?: boolean
+  description?: string
+  rightChildren?: React.ReactNode
+  href?: string
+  ref?: React.Ref<LineItemElement>
+  children?: React.ReactNode
 }
 
 /**
@@ -169,15 +169,15 @@ export default function LineItem({
             ? "muted"
             : skeleton
               ? "skeleton"
-              : "main";
+              : "main"
 
-  const emphasisKey = emphasized ? "emphasized" : "normal";
+  const emphasisKey = emphasized ? "emphasized" : "normal"
 
   const lineItemClassName = cn(
     "flex flex-row w-full items-start p-2 rounded-08 group/LineItem gap-2 appearance-none border-0 text-left",
-    !!(children && description) ? "items-start" : "items-center",
-    buttonClassNames[variant][emphasisKey]
-  );
+    children && description ? "items-start" : "items-center",
+    buttonClassNames[variant][emphasisKey],
+  )
 
   const content = (
     <>
@@ -185,13 +185,13 @@ export default function LineItem({
         <div
           className={cn(
             "flex flex-col justify-center items-center h-[1rem] min-w-[1rem]",
-            !!(children && description) && "mt-0.5"
+            !!(children && description) && "mt-0.5",
           )}
         >
           <Icon
             className={cn(
               "h-[1rem] w-[1rem]",
-              strokeIcon && iconClassNames[variant]
+              strokeIcon && iconClassNames[variant],
             )}
           />
         </div>
@@ -232,7 +232,7 @@ export default function LineItem({
         ) : null}
       </Section>
     </>
-  );
+  )
 
   if (href) {
     return (
@@ -245,7 +245,7 @@ export default function LineItem({
       >
         {content}
       </Link>
-    );
+    )
   }
 
   return (
@@ -259,5 +259,5 @@ export default function LineItem({
     >
       {content}
     </button>
-  );
+  )
 }

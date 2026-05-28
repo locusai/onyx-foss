@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react"
 
-import SidebarSection from "@/sections/sidebar/SidebarSection";
-import SidebarTab from "@/refresh-components/buttons/SidebarTab";
-import { Button } from "@opal/components";
-import { SvgMoreHorizontal, SvgOnyxOctagon } from "@opal/icons";
+import SidebarSection from "@/sections/sidebar/SidebarSection"
+import SidebarTab from "@/refresh-components/buttons/SidebarTab"
+import { Button } from "@opal/components"
+import { SvgMoreHorizontal, SvgOnyxOctagon } from "@opal/icons"
 
 const meta = {
   title: "Onyx-OSS/Sidebar/SidebarSection",
@@ -11,11 +11,11 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-} satisfies Meta<typeof SidebarSection>;
+} satisfies Meta<typeof SidebarSection>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
@@ -34,4 +34,4 @@ export const Default: Story = {
       </div>
     ),
   },
-};
+}
