@@ -7,12 +7,12 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const PACKAGE_NAME = "@locusai/onyx-foss"
-const DEFAULT_VERSION = "3.0.13-ike.9"
+const DEFAULT_VERSION = "3.0.13-ike.10"
 const FOSS_SOURCE_COMMIT = "071745492fe356ea66404a504775f58b6b5d0e0a"
 const NON_FOSS_SOURCE_COMMIT = "8eb2e10203d5ab6d5a38e8adcd50b1eca8b20050"
 const NON_FOSS_SOURCE_TAG = "v3.0.13"
-const CARRY_HEAD = "c2dabcd1797366fe0ea58c797f9d18b21dbeeae2"
-const CARRY_SUFFIX = "ike.9"
+const CARRY_HEAD = "326cd98b05fc393afce11a0a5c6f277926a4a693"
+const CARRY_SUFFIX = "ike.10"
 
 function parseArgs(argv) {
   const values = new Map()
