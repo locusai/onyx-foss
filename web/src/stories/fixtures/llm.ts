@@ -1,13 +1,13 @@
 import type {
   LLMProviderDescriptor,
   WellKnownLLMProviderDescriptor,
-} from "@/app/admin/configuration/llm/interfaces";
+} from "@/app/admin/configuration/llm/interfaces"
 
 export type StorybookOpenClawLlmCatalogVersion = {
-  id: string;
-  label: string;
-  providers: LLMProviderDescriptor[];
-};
+  id: string
+  label: string
+  providers: LLMProviderDescriptor[]
+}
 
 const openClaw202657Ike24Providers = [
   {
@@ -6238,7 +6238,7 @@ const openClaw202657Ike24Providers = [
       },
     ],
   },
-] satisfies LLMProviderDescriptor[];
+] satisfies LLMProviderDescriptor[]
 
 export const storybookOpenClawLlmCatalogVersions = [
   {
@@ -6246,13 +6246,13 @@ export const storybookOpenClawLlmCatalogVersions = [
     label: "2026.5.7-ike.24",
     providers: openClaw202657Ike24Providers,
   },
-] satisfies StorybookOpenClawLlmCatalogVersion[];
+] satisfies StorybookOpenClawLlmCatalogVersion[]
 
 export const storybookDefaultOpenClawLlmCatalogVersion =
-  storybookOpenClawLlmCatalogVersions[0]!;
+  storybookOpenClawLlmCatalogVersions[0]!
 
 export const storybookLlmProviders =
-  storybookDefaultOpenClawLlmCatalogVersion.providers;
+  storybookDefaultOpenClawLlmCatalogVersion.providers
 
 export const storybookLlmProviderOptions =
-  [] satisfies WellKnownLLMProviderDescriptor[];
+  [] satisfies WellKnownLLMProviderDescriptor[]

@@ -1,4 +1,4 @@
-import type { Project } from "@/app/app/projects/projectsService";
+import type { Project } from "@/app/app/projects/projectsService"
 
 export const storybookProjects = [
   {
@@ -10,5 +10,4 @@ export const storybookProjects = [
     instructions: null,
     chat_sessions: [],
   },
-] satisfies Project[];
-
+] satisfies Project[]

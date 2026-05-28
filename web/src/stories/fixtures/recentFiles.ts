@@ -1,8 +1,8 @@
-import { ChatFileType } from "@/app/app/interfaces";
+import { ChatFileType } from "@/app/app/interfaces"
 import {
   UserFileStatus,
   type ProjectFile,
-} from "@/app/app/projects/projectsService";
+} from "@/app/app/projects/projectsService"
 
 export const storybookRecentFiles = [
   {
@@ -19,5 +19,4 @@ export const storybookRecentFiles = [
     token_count: 1200,
     chunk_count: 42,
   },
-] satisfies ProjectFile[];
-
+] satisfies ProjectFile[]

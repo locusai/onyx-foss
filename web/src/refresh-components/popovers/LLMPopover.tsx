@@ -1,80 +1,80 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Popover from "@/refresh-components/Popover";
-import { LlmDescriptor, LlmManager } from "@/lib/hooks";
-import { structureValue } from "@/lib/llm/utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import Popover from "@/refresh-components/Popover"
+import { LlmDescriptor, LlmManager } from "@/lib/hooks"
+import { structureValue } from "@/lib/llm/utils"
 import {
   AGGREGATOR_PROVIDERS,
   getProviderIcon,
-} from "@/app/admin/configuration/llm/utils";
-import { Slider } from "@/components/ui/slider";
-import { useUser } from "@/providers/UserProvider";
-import Text from "@/refresh-components/texts/Text";
-import { SvgRefreshCw } from "@opal/icons";
-import { OpenButton } from "@opal/components";
-import { LLMOption, LLMOptionGroup } from "./interfaces";
-import ModelListContent from "./ModelListContent";
+} from "@/app/admin/configuration/llm/utils"
+import { Slider } from "@/components/ui/slider"
+import { useUser } from "@/providers/UserProvider"
+import Text from "@/refresh-components/texts/Text"
+import { SvgRefreshCw } from "@opal/icons"
+import { OpenButton } from "@opal/components"
+import { LLMOption, LLMOptionGroup } from "./interfaces"
+import ModelListContent from "./ModelListContent"
 
 export interface LLMPopoverProps {
-  llmManager: LlmManager;
-  requiresImageInput?: boolean;
-  folded?: boolean;
-  foldable?: boolean;
-  onSelect?: (value: string) => void;
-  currentModelName?: string;
-  disabled?: boolean;
+  llmManager: LlmManager
+  requiresImageInput?: boolean
+  folded?: boolean
+  foldable?: boolean
+  onSelect?: (value: string) => void
+  currentModelName?: string
+  disabled?: boolean
 }
 
-export { buildLlmOptions } from "./llmUtils";
+export { buildLlmOptions } from "./llmUtils"
 
 export function groupLlmOptions(
-  filteredOptions: LLMOption[]
+  filteredOptions: LLMOption[],
 ): LLMOptionGroup[] {
-  const groups = new Map<string, Omit<LLMOptionGroup, "key">>();
+  const groups = new Map<string, Omit<LLMOptionGroup, "key">>()
 
   filteredOptions.forEach((option) => {
-    const provider = option.provider.toLowerCase();
-    const isAggregator = AGGREGATOR_PROVIDERS.has(provider);
+    const provider = option.provider.toLowerCase()
+    const isAggregator = AGGREGATOR_PROVIDERS.has(provider)
     const groupKey =
       isAggregator && option.vendor
         ? `${provider}/${option.vendor.toLowerCase()}`
-        : provider;
+        : provider
 
     if (!groups.has(groupKey)) {
-      let displayName: string;
+      let displayName: string
 
       if (isAggregator && option.vendor) {
         const vendorDisplayName =
-          option.vendor.charAt(0).toUpperCase() + option.vendor.slice(1);
-        displayName = `${option.providerDisplayName}/${vendorDisplayName}`;
+          option.vendor.charAt(0).toUpperCase() + option.vendor.slice(1)
+        displayName = `${option.providerDisplayName}/${vendorDisplayName}`
       } else {
-        displayName = option.providerDisplayName;
+        displayName = option.providerDisplayName
       }
 
       groups.set(groupKey, {
         displayName,
         options: [],
         Icon: getProviderIcon(provider),
-      });
+      })
     }
 
-    groups.get(groupKey)!.options.push(option);
-  });
+    groups.get(groupKey)!.options.push(option)
+  })
 
   const sortedKeys = Array.from(groups.keys()).sort((a, b) =>
-    groups.get(a)!.displayName.localeCompare(groups.get(b)!.displayName)
-  );
+    groups.get(a)!.displayName.localeCompare(groups.get(b)!.displayName),
+  )
 
   return sortedKeys.map((key) => {
-    const group = groups.get(key)!;
+    const group = groups.get(key)!
     return {
       key,
       displayName: group.displayName,
       options: group.options,
       Icon: group.Icon,
-    };
-  });
+    }
+  })
 }
 
 export default function LLMPopover({
@@ -86,45 +86,45 @@ export default function LLMPopover({
   currentModelName,
   disabled = false,
 }: LLMPopoverProps) {
-  const llmProviders = llmManager.llmProviders;
-  const isLoadingProviders = llmManager.isLoadingProviders;
+  const llmProviders = llmManager.llmProviders
+  const isLoadingProviders = llmManager.isLoadingProviders
 
-  const [open, setOpen] = useState(false);
-  const { user } = useUser();
+  const [open, setOpen] = useState(false)
+  const { user } = useUser()
 
   const [localTemperature, setLocalTemperature] = useState(
-    llmManager.temperature ?? 0.5
-  );
+    llmManager.temperature ?? 0.5,
+  )
 
   useEffect(() => {
-    setLocalTemperature(llmManager.temperature ?? 0.5);
-  }, [llmManager.temperature]);
+    setLocalTemperature(llmManager.temperature ?? 0.5)
+  }, [llmManager.temperature])
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const handleGlobalTemperatureChange = useCallback((value: number[]) => {
-    const value_0 = value[0];
+    const value_0 = value[0]
     if (value_0 !== undefined) {
-      setLocalTemperature(value_0);
+      setLocalTemperature(value_0)
     }
-  }, []);
+  }, [])
 
   const handleGlobalTemperatureCommit = useCallback(
     (value: number[]) => {
-      const value_0 = value[0];
+      const value_0 = value[0]
       if (value_0 !== undefined) {
-        llmManager.updateTemperature(value_0);
+        llmManager.updateTemperature(value_0)
       }
     },
-    [llmManager]
-  );
+    [llmManager],
+  )
 
   const isSelected = useCallback(
     (option: LLMOption) =>
       option.modelName === llmManager.currentLlm.modelName &&
       option.provider === llmManager.currentLlm.provider,
-    [llmManager.currentLlm.modelName, llmManager.currentLlm.provider]
-  );
+    [llmManager.currentLlm.modelName, llmManager.currentLlm.provider],
+  )
 
   const handleSelectModel = useCallback(
     (option: LLMOption) => {
@@ -132,32 +132,30 @@ export default function LLMPopover({
         modelName: option.modelName,
         provider: option.provider,
         name: option.name,
-      } as LlmDescriptor);
-      onSelect?.(
-        structureValue(option.name, option.provider, option.modelName)
-      );
-      setOpen(false);
+      } as LlmDescriptor)
+      onSelect?.(structureValue(option.name, option.provider, option.modelName))
+      setOpen(false)
     },
-    [llmManager, onSelect]
-  );
+    [llmManager, onSelect],
+  )
 
   const currentLlmDisplayName = useMemo(() => {
     const currentModel =
       currentModelName && currentModelName.trim()
         ? currentModelName
-        : llmManager.currentLlm.modelName;
-    if (!llmProviders) return currentModel;
+        : llmManager.currentLlm.modelName
+    if (!llmProviders) return currentModel
 
     for (const provider of llmProviders) {
       const config = provider.model_configurations.find(
-        (m) => m.name === currentModel
-      );
+        (m) => m.name === currentModel,
+      )
       if (config) {
-        return config.display_name || config.name;
+        return config.display_name || config.name
       }
     }
-    return currentModel;
-  }, [llmProviders, currentModelName, llmManager.currentLlm.modelName]);
+    return currentModel
+  }, [llmProviders, currentModelName, llmManager.currentLlm.modelName])
 
   const temperatureFooter = user?.preferences?.temperature_override_enabled ? (
     <>
@@ -182,9 +180,9 @@ export default function LLMPopover({
         </div>
       </div>
     </>
-  ) : undefined;
+  ) : undefined
 
-  const buttonFoldable = foldable ?? folded;
+  const buttonFoldable = foldable ?? folded
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -197,7 +195,7 @@ export default function LLMPopover({
                 ? SvgRefreshCw
                 : getProviderIcon(
                     llmManager.currentLlm.provider,
-                    llmManager.currentLlm.modelName
+                    llmManager.currentLlm.modelName,
                   )
             }
             foldable={buttonFoldable}
@@ -220,5 +218,5 @@ export default function LLMPopover({
         />
       </Popover.Content>
     </Popover>
-  );
+  )
 }

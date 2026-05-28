@@ -1,28 +1,28 @@
-"use client";
+"use client"
 
-import type { Meta, StoryObj } from "@storybook/react";
-import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react"
+import type { ReactNode } from "react"
+import { useMemo, useState } from "react"
 
 import type {
   LLMProviderDescriptor,
   ModelConfiguration,
-} from "@/app/admin/configuration/llm/interfaces";
-import { ProviderIcon } from "@/app/admin/configuration/llm/ProviderIcon";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
-import Button from "@/refresh-components/buttons/Button";
-import Checkbox from "@/refresh-components/inputs/Checkbox";
-import InputSelect from "@/refresh-components/inputs/InputSelect";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
-import Switch from "@/refresh-components/inputs/Switch";
-import Modal from "@/refresh-components/Modal";
-import Text from "@/refresh-components/texts/Text";
-import { cn } from "@/lib/utils";
+} from "@/app/admin/configuration/llm/interfaces"
+import { ProviderIcon } from "@/app/admin/configuration/llm/ProviderIcon"
+import * as SettingsLayouts from "@/layouts/settings-layouts"
+import Button from "@/refresh-components/buttons/Button"
+import Checkbox from "@/refresh-components/inputs/Checkbox"
+import InputSelect from "@/refresh-components/inputs/InputSelect"
+import InputTypeIn from "@/refresh-components/inputs/InputTypeIn"
+import Switch from "@/refresh-components/inputs/Switch"
+import Modal from "@/refresh-components/Modal"
+import Text from "@/refresh-components/texts/Text"
+import { cn } from "@/lib/utils"
 import {
   storybookDefaultOpenClawLlmCatalogVersion,
   storybookOpenClawLlmCatalogVersions,
-} from "@/stories/fixtures/llm";
-import { Content, ContentAction } from "@opal/layouts";
+} from "@/stories/fixtures/llm"
+import { Content, ContentAction } from "@opal/layouts"
 import {
   SvgArrowExchange,
   SvgCpu,
@@ -32,14 +32,14 @@ import {
   SvgTrash,
   SvgUsers,
   SvgX,
-} from "@opal/icons";
+} from "@opal/icons"
 
 function StoryCard({ children }: { children: ReactNode }) {
   return (
     <div className="rounded-12 border border-border-01 bg-background-neutral-01">
       {children}
     </div>
-  );
+  )
 }
 
 function StoryInputHorizontal({
@@ -47,9 +47,9 @@ function StoryInputHorizontal({
   description,
   children,
 }: {
-  title: string;
-  description: string;
-  children: ReactNode;
+  title: string
+  description: string
+  children: ReactNode
 }) {
   return (
     <div className="grid grid-cols-[16rem_1fr] items-center gap-3 p-4">
@@ -61,7 +61,7 @@ function StoryInputHorizontal({
       />
       <div>{children}</div>
     </div>
-  );
+  )
 }
 
 function StorySelectCard({
@@ -69,9 +69,9 @@ function StorySelectCard({
   selected,
   onClick,
 }: {
-  children: ReactNode;
-  selected?: boolean;
-  onClick: () => void;
+  children: ReactNode
+  selected?: boolean
+  onClick: () => void
 }) {
   return (
     <button
@@ -81,23 +81,23 @@ function StorySelectCard({
         "w-full cursor-pointer overflow-hidden rounded-12 border text-left transition-colors",
         selected
           ? "border-border-05 bg-background-neutral-02"
-          : "border-border-01 bg-background-neutral-01 hover:bg-background-neutral-02"
+          : "border-border-01 bg-background-neutral-01 hover:bg-background-neutral-02",
       )}
     >
       {children}
     </button>
-  );
+  )
 }
 
 type ProviderCatalogEntry = {
-  provider: string;
-  productName: string;
-  companyName: string;
-  models: ModelConfiguration[];
-};
+  provider: string
+  productName: string
+  companyName: string
+  models: ModelConfiguration[]
+}
 
 function providerCatalogFromProviders(
-  providers: LLMProviderDescriptor[]
+  providers: LLMProviderDescriptor[],
 ): ProviderCatalogEntry[] {
   return providers.map((provider) => ({
     provider: provider.provider,
@@ -105,11 +105,11 @@ function providerCatalogFromProviders(
     companyName:
       provider.name || provider.provider_display_name || provider.provider,
     models: provider.model_configurations,
-  }));
+  }))
 }
 
 function catalogEntryFromProvider(
-  provider: LLMProviderDescriptor
+  provider: LLMProviderDescriptor,
 ): ProviderCatalogEntry {
   return {
     provider: provider.provider,
@@ -117,7 +117,7 @@ function catalogEntryFromProvider(
     companyName:
       provider.name || provider.provider_display_name || provider.provider,
     models: provider.model_configurations,
-  };
+  }
 }
 
 function cloneProvider(provider: LLMProviderDescriptor): LLMProviderDescriptor {
@@ -129,13 +129,13 @@ function cloneProvider(provider: LLMProviderDescriptor): LLMProviderDescriptor {
     model_configurations: provider.model_configurations.map((model) => ({
       ...model,
     })),
-  };
+  }
 }
 
 function providerFromCatalog(
-  entry: ProviderCatalogEntry
+  entry: ProviderCatalogEntry,
 ): LLMProviderDescriptor {
-  const defaultModel = entry.models.find((model) => model.is_visible);
+  const defaultModel = entry.models.find((model) => model.is_visible)
   return {
     name: entry.companyName,
     provider: entry.provider,
@@ -146,19 +146,19 @@ function providerFromCatalog(
     groups: [],
     personas: [],
     model_configurations: entry.models.map((model) => ({ ...model })),
-  };
+  }
 }
 
 function modelLabel(model: ModelConfiguration) {
-  return model.display_name || model.name;
+  return model.display_name || model.name
 }
 
 interface ProviderCardProps {
-  provider: LLMProviderDescriptor;
-  selected: boolean;
-  isDefault: boolean;
-  onConfigure: () => void;
-  onDelete: () => void;
+  provider: LLMProviderDescriptor
+  selected: boolean
+  isDefault: boolean
+  onConfigure: () => void
+  onDelete: () => void
 }
 
 function ExistingProviderCard({
@@ -168,7 +168,7 @@ function ExistingProviderCard({
   onConfigure,
   onDelete,
 }: ProviderCardProps) {
-  const entry = catalogEntryFromProvider(provider);
+  const entry = catalogEntryFromProvider(provider)
 
   return (
     <StorySelectCard selected={selected} onClick={onConfigure}>
@@ -189,8 +189,8 @@ function ExistingProviderCard({
               leftIcon={SvgTrash}
               aria-label={`Delete ${provider.name}`}
               onClick={(event) => {
-                event.stopPropagation();
-                onDelete();
+                event.stopPropagation()
+                onDelete()
               }}
             />
             <Button
@@ -200,23 +200,23 @@ function ExistingProviderCard({
               leftIcon={SvgSettings}
               aria-label={`Configure ${provider.name}`}
               onClick={(event) => {
-                event.stopPropagation();
-                onConfigure();
+                event.stopPropagation()
+                onConfigure()
               }}
             />
           </div>
         }
       />
     </StorySelectCard>
-  );
+  )
 }
 
 function NewProviderCard({
   entry,
   onConfigure,
 }: {
-  entry: ProviderCatalogEntry;
-  onConfigure: () => void;
+  entry: ProviderCatalogEntry
+  onConfigure: () => void
 }) {
   return (
     <StorySelectCard onClick={onConfigure}>
@@ -234,8 +234,8 @@ function NewProviderCard({
             size="md"
             rightIcon={SvgArrowExchange}
             onClick={(event) => {
-              event.stopPropagation();
-              onConfigure();
+              event.stopPropagation()
+              onConfigure()
             }}
           >
             Connect
@@ -243,14 +243,14 @@ function NewProviderCard({
         }
       />
     </StorySelectCard>
-  );
+  )
 }
 
 interface ProviderSetupModalProps {
-  provider: LLMProviderDescriptor;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSave: (provider: LLMProviderDescriptor) => void;
+  provider: LLMProviderDescriptor
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (provider: LLMProviderDescriptor) => void
 }
 
 function ProviderSetupModal({
@@ -259,38 +259,38 @@ function ProviderSetupModal({
   onOpenChange,
   onSave,
 }: ProviderSetupModalProps) {
-  const entry = catalogEntryFromProvider(provider);
-  const [draft, setDraft] = useState(() => cloneProvider(provider));
-  const [autoUpdate, setAutoUpdate] = useState(true);
-  const [newModelName, setNewModelName] = useState("");
+  const entry = catalogEntryFromProvider(provider)
+  const [draft, setDraft] = useState(() => cloneProvider(provider))
+  const [autoUpdate, setAutoUpdate] = useState(true)
+  const [newModelName, setNewModelName] = useState("")
   const visibleModels = draft.model_configurations.filter(
-    (model) => model.is_visible
-  );
+    (model) => model.is_visible,
+  )
   const defaultModel =
     visibleModels.find((model) => model.name === draft.default_model_name) ??
-    visibleModels[0];
+    visibleModels[0]
 
   function updateModels(models: ModelConfiguration[]) {
     const nextDefault =
       models.find((model) => model.name === draft.default_model_name)
         ?.is_visible === true
         ? draft.default_model_name
-        : models.find((model) => model.is_visible)?.name || "";
+        : models.find((model) => model.is_visible)?.name || ""
 
     setDraft({
       ...draft,
       default_model_name: nextDefault,
       model_configurations: models,
-    });
+    })
   }
 
   function addModel() {
-    const modelName = newModelName.trim();
+    const modelName = newModelName.trim()
     if (
       !modelName ||
       draft.model_configurations.some((model) => model.name === modelName)
     ) {
-      return;
+      return
     }
 
     updateModels([
@@ -303,8 +303,8 @@ function ProviderSetupModal({
         supports_image_input: false,
         supports_reasoning: false,
       },
-    ]);
-    setNewModelName("");
+    ])
+    setNewModelName("")
   }
 
   return (
@@ -468,14 +468,14 @@ function ProviderSetupModal({
                             draft.model_configurations.map((model) => ({
                               ...model,
                               is_visible: !draft.model_configurations.every(
-                                (candidate) => candidate.is_visible
+                                (candidate) => candidate.is_visible,
                               ),
-                            }))
+                            })),
                           )
                         }
                       >
                         {draft.model_configurations.every(
-                          (model) => model.is_visible
+                          (model) => model.is_visible,
                         )
                           ? "Deselect All"
                           : "Select All"}
@@ -492,7 +492,7 @@ function ProviderSetupModal({
                           "flex w-full cursor-pointer items-center justify-between rounded-08 p-2 text-left transition-colors",
                           model.is_visible
                             ? "bg-background-neutral-02"
-                            : "hover:bg-background-neutral-02"
+                            : "hover:bg-background-neutral-02",
                         )}
                         onClick={() =>
                           updateModels(
@@ -502,8 +502,8 @@ function ProviderSetupModal({
                                     ...candidate,
                                     is_visible: !candidate.is_visible,
                                   }
-                                : candidate
-                            )
+                                : candidate,
+                            ),
                           )
                         }
                       >
@@ -537,8 +537,8 @@ function ProviderSetupModal({
                           }
                           onKeyDown={(event) => {
                             if (event.key === "Enter") {
-                              event.preventDefault();
-                              addModel();
+                              event.preventDefault()
+                              addModel()
                             }
                           }}
                           placeholder="Enter model name"
@@ -594,8 +594,8 @@ function ProviderSetupModal({
                 primary
                 size="md"
                 onClick={() => {
-                  onSave(draft);
-                  onOpenChange(false);
+                  onSave(draft)
+                  onOpenChange(false)
                 }}
               >
                 Update
@@ -605,7 +605,7 @@ function ProviderSetupModal({
         </div>
       </Modal.Content>
     </Modal>
-  );
+  )
 }
 
 function ProviderDeleteModal({
@@ -614,12 +614,12 @@ function ProviderDeleteModal({
   onOpenChange,
   onDelete,
 }: {
-  provider: LLMProviderDescriptor | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onDelete: () => void;
+  provider: LLMProviderDescriptor | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onDelete: () => void
 }) {
-  if (!provider) return null;
+  if (!provider) return null
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
@@ -651,8 +651,8 @@ function ProviderDeleteModal({
               primary
               size="md"
               onClick={() => {
-                onDelete();
-                onOpenChange(false);
+                onDelete()
+                onOpenChange(false)
               }}
             >
               Delete
@@ -661,11 +661,11 @@ function ProviderDeleteModal({
         </div>
       </Modal.Content>
     </Modal>
-  );
+  )
 }
 
 interface LanguageModelsConfiguration32Props {
-  catalogVersionId?: string;
+  catalogVersionId?: string
 }
 
 function LanguageModelsConfiguration32({
@@ -673,56 +673,56 @@ function LanguageModelsConfiguration32({
 }: LanguageModelsConfiguration32Props) {
   const catalogVersion =
     storybookOpenClawLlmCatalogVersions.find(
-      (version) => version.id === catalogVersionId
-    ) ?? storybookDefaultOpenClawLlmCatalogVersion;
-  const fixtureProviders = catalogVersion.providers;
+      (version) => version.id === catalogVersionId,
+    ) ?? storybookDefaultOpenClawLlmCatalogVersion
+  const fixtureProviders = catalogVersion.providers
   const providerCatalog = useMemo(
     () => providerCatalogFromProviders(fixtureProviders),
-    [fixtureProviders]
-  );
+    [fixtureProviders],
+  )
 
   const [providers, setProviders] = useState<LLMProviderDescriptor[]>(() =>
-    fixtureProviders.slice(0, 2).map(cloneProvider)
-  );
+    fixtureProviders.slice(0, 2).map(cloneProvider),
+  )
   const [defaultValue, setDefaultValue] = useState(
     `${fixtureProviders[0]!.provider}:${
       fixtureProviders[0]!.default_model_name
-    }`
-  );
+    }`,
+  )
   const [activeProvider, setActiveProvider] =
-    useState<LLMProviderDescriptor | null>(null);
+    useState<LLMProviderDescriptor | null>(null)
   const [deleteProvider, setDeleteProvider] =
-    useState<LLMProviderDescriptor | null>(null);
+    useState<LLMProviderDescriptor | null>(null)
 
   const configuredProviderNames = useMemo(
     () => new Set(providers.map((provider) => provider.provider)),
-    [providers]
-  );
+    [providers],
+  )
 
-  const defaultProviderKey = defaultValue.split(":")[0];
+  const defaultProviderKey = defaultValue.split(":")[0]
   const availableProviderCatalog = providerCatalog.filter(
-    (entry) => !configuredProviderNames.has(entry.provider)
-  );
+    (entry) => !configuredProviderNames.has(entry.provider),
+  )
 
   function upsertProvider(provider: LLMProviderDescriptor) {
     setProviders((current) => {
       const exists = current.some(
-        (candidate) => candidate.provider === provider.provider
-      );
+        (candidate) => candidate.provider === provider.provider,
+      )
       return exists
         ? current.map((candidate) =>
-            candidate.provider === provider.provider ? provider : candidate
+            candidate.provider === provider.provider ? provider : candidate,
           )
-        : [...current, provider];
-    });
+        : [...current, provider]
+    })
   }
 
   function removeProvider(provider: LLMProviderDescriptor) {
     setProviders((current) =>
-      current.filter((candidate) => candidate.provider !== provider.provider)
-    );
+      current.filter((candidate) => candidate.provider !== provider.provider),
+    )
     if (activeProvider?.provider === provider.provider) {
-      setActiveProvider(null);
+      setActiveProvider(null)
     }
   }
 
@@ -812,7 +812,7 @@ function LanguageModelsConfiguration32({
               provider={activeProvider}
               open={!!activeProvider}
               onOpenChange={(open) => {
-                if (!open) setActiveProvider(null);
+                if (!open) setActiveProvider(null)
               }}
               onSave={upsertProvider}
             />
@@ -822,14 +822,14 @@ function LanguageModelsConfiguration32({
             provider={deleteProvider}
             open={!!deleteProvider}
             onOpenChange={(open) => {
-              if (!open) setDeleteProvider(null);
+              if (!open) setDeleteProvider(null)
             }}
             onDelete={() => deleteProvider && removeProvider(deleteProvider)}
           />
         </SettingsLayouts.Body>
       </SettingsLayouts.Root>
     </main>
-  );
+  )
 }
 
 const meta = {
@@ -838,11 +838,11 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
-} satisfies Meta<typeof LanguageModelsConfiguration32>;
+} satisfies Meta<typeof LanguageModelsConfiguration32>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 export const IntendedUse: Story = {
   args: {
@@ -860,4 +860,4 @@ export const IntendedUse: Story = {
       catalogVersionId={args.catalogVersionId}
     />
   ),
-};
+}

@@ -2,7 +2,7 @@ import {
   ApplicationStatus,
   QueryHistoryType,
   type CombinedSettings,
-} from "@/interfaces/settings";
+} from "@/interfaces/settings"
 
 export const storybookSettings = {
   settings: {
@@ -42,4 +42,4 @@ export const storybookSettings = {
   webVersion: "storybook",
   webDomain: "http://localhost:6006",
   isSearchModeAvailable: true,
-} satisfies CombinedSettings;
+} satisfies CombinedSettings

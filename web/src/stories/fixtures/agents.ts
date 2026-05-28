@@ -1,4 +1,4 @@
-import type { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces";
+import type { MinimalPersonaSnapshot } from "@/app/admin/assistants/interfaces"
 
 export const storybookAgents = [
   {
@@ -42,5 +42,4 @@ export const storybookAgents = [
     builtin_persona: true,
     owner: null,
   },
-] satisfies MinimalPersonaSnapshot[];
-
+] satisfies MinimalPersonaSnapshot[]

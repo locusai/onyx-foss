@@ -1,4 +1,3 @@
-import type { InputPrompt } from "@/app/app/interfaces";
+import type { InputPrompt } from "@/app/app/interfaces"
 
-export const storybookInputPrompts = [] satisfies InputPrompt[];
-
+export const storybookInputPrompts = [] satisfies InputPrompt[]

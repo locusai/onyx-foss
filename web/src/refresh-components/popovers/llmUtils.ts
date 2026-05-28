@@ -1,30 +1,30 @@
-import { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
-import { LLMOption } from "./interfaces";
+import { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces"
+import { LLMOption } from "./interfaces"
 
 export function buildLlmOptions(
   llmProviders: LLMProviderDescriptor[] | undefined,
-  currentModelName?: string
+  currentModelName?: string,
 ): LLMOption[] {
   if (!llmProviders) {
-    return [];
+    return []
   }
 
-  const seenKeys = new Set<string>();
-  const options: LLMOption[] = [];
+  const seenKeys = new Set<string>()
+  const options: LLMOption[] = []
 
   llmProviders.forEach((llmProvider) => {
     llmProvider.model_configurations
       .filter(
         (modelConfiguration) =>
           modelConfiguration.is_visible ||
-          modelConfiguration.name === currentModelName
+          modelConfiguration.name === currentModelName,
       )
       .forEach((modelConfiguration) => {
-        const key = `${llmProvider.provider}:${modelConfiguration.name}`;
+        const key = `${llmProvider.provider}:${modelConfiguration.name}`
         if (seenKeys.has(key)) {
-          return;
+          return
         }
-        seenKeys.add(key);
+        seenKeys.add(key)
 
         options.push({
           name: llmProvider.name,
@@ -40,9 +40,9 @@ export function buildLlmOptions(
           version: modelConfiguration.version || null,
           supportsReasoning: modelConfiguration.supports_reasoning || false,
           supportsImageInput: modelConfiguration.supports_image_input || false,
-        });
-      });
-  });
+        })
+      })
+  })
 
-  return options;
+  return options
 }

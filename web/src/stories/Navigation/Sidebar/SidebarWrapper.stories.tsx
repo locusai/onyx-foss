@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react"
 
-import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
-import SidebarBody from "@/sections/sidebar/SidebarBody";
-import SidebarSection from "@/sections/sidebar/SidebarSection";
-import SidebarTab from "@/refresh-components/buttons/SidebarTab";
-import { SvgFolderPlus, SvgOnyxOctagon } from "@opal/icons";
+import SidebarWrapper from "@/sections/sidebar/SidebarWrapper"
+import SidebarBody from "@/sections/sidebar/SidebarBody"
+import SidebarSection from "@/sections/sidebar/SidebarSection"
+import SidebarTab from "@/refresh-components/buttons/SidebarTab"
+import { SvgFolderPlus, SvgOnyxOctagon } from "@opal/icons"
 
 const meta = {
   title: "Onyx-OSS/Sidebar/SidebarWrapper",
@@ -15,11 +15,11 @@ const meta = {
   argTypes: {
     onFoldClick: { action: "fold" },
   },
-} satisfies Meta<typeof SidebarWrapper>;
+} satisfies Meta<typeof SidebarWrapper>
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof meta>
 
 function SidebarContents() {
   return (
@@ -35,7 +35,7 @@ function SidebarContents() {
         </SidebarTab>
       </SidebarSection>
     </SidebarBody>
-  );
+  )
 }
 
 export const Unfolded: Story = {
@@ -47,7 +47,7 @@ export const Unfolded: Story = {
       <SidebarContents />
     </SidebarWrapper>
   ),
-};
+}
 
 export const Folded: Story = {
   args: {
@@ -58,7 +58,7 @@ export const Folded: Story = {
       <SidebarContents />
     </SidebarWrapper>
   ),
-};
+}
 
 export const StaticHeader: Story = {
   args: {
@@ -69,4 +69,4 @@ export const StaticHeader: Story = {
       <SidebarContents />
     </SidebarWrapper>
   ),
-};
+}
