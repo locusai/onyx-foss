@@ -1,7 +1,7 @@
-import type { StorybookConfig } from "@storybook/nextjs";
+import type { StorybookConfig } from "@storybook/nextjs"
 
 if (!process.env.WATCHPACK_POLLING) {
-  process.env.WATCHPACK_POLLING = "true";
+  process.env.WATCHPACK_POLLING = "true"
 }
 
 const config: StorybookConfig = {
@@ -22,6 +22,6 @@ const config: StorybookConfig = {
   typescript: {
     reactDocgen: false,
   },
-};
+}
 
-export default config;
+export default config

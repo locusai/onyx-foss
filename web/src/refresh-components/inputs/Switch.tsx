@@ -1,19 +1,19 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { cn } from "@/lib/utils";
-import { WithoutStyles } from "@/types";
+import React, { useState } from "react"
+import { cn } from "@/lib/utils"
+import { WithoutStyles } from "@/types"
 
 export interface SwitchProps
   extends WithoutStyles<
     Omit<React.ComponentPropsWithoutRef<"button">, "onChange">
   > {
   // Switch variants
-  disabled?: boolean;
+  disabled?: boolean
 
-  checked?: boolean;
-  defaultChecked?: boolean;
-  onCheckedChange?: (checked: boolean) => void;
+  checked?: boolean
+  defaultChecked?: boolean
+  onCheckedChange?: (checked: boolean) => void
 }
 
 const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
@@ -28,23 +28,23 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
       onClick,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [uncontrolledChecked, setUncontrolledChecked] = useState(
-      defaultChecked ?? false
-    );
+      defaultChecked ?? false,
+    )
 
-    const isControlled = controlledChecked !== undefined;
-    const checked = isControlled ? controlledChecked : uncontrolledChecked;
+    const isControlled = controlledChecked !== undefined
+    const checked = isControlled ? controlledChecked : uncontrolledChecked
 
     function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-      if (disabled) return;
+      if (disabled) return
 
-      const newChecked = !checked;
+      const newChecked = !checked
 
-      if (!isControlled) setUncontrolledChecked(newChecked);
-      onClick?.(event);
-      onCheckedChange?.(newChecked);
+      if (!isControlled) setUncontrolledChecked(newChecked)
+      onClick?.(event)
+      onCheckedChange?.(newChecked)
     }
 
     return (
@@ -61,7 +61,7 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
               : "switch-disabled"
             : checked
               ? "switch-normal-checked"
-              : "switch-normal"
+              : "switch-normal",
         )}
         disabled={disabled}
         onClick={handleClick}
@@ -71,13 +71,13 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           className={cn(
             "pointer-events-none block h-[0.875rem] w-[0.875rem] rounded-full ring-0 transition-transform",
             checked ? "translate-x-[15px]" : "translate-x-[1px]",
-            disabled ? "switch-thumb-disabled" : "switch-thumb"
+            disabled ? "switch-thumb-disabled" : "switch-thumb",
           )}
         />
       </button>
-    );
-  }
-);
-Switch.displayName = "Switch";
+    )
+  },
+)
+Switch.displayName = "Switch"
 
-export default Switch;
+export default Switch

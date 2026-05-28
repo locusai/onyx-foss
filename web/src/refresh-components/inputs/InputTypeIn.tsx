@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { cn, noProp } from "@/lib/utils";
-import IconButton from "@/refresh-components/buttons/IconButton";
+import * as React from "react"
+import { cn, noProp } from "@/lib/utils"
+import IconButton from "@/refresh-components/buttons/IconButton"
 import {
   innerClasses,
   textClasses,
   Variants,
   wrapperClasses,
-} from "@/refresh-components/inputs/styles";
-import { SvgSearch, SvgX } from "@opal/icons";
+} from "@/refresh-components/inputs/styles"
+import { SvgSearch, SvgX } from "@opal/icons"
 
 /**
  * InputTypeIn Component
@@ -65,13 +65,13 @@ import { SvgSearch, SvgX } from "@opal/icons";
  */
 export interface InputTypeInProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "disabled"> {
-  variant?: Variants;
+  variant?: Variants
 
-  prefixText?: string;
-  leftSearchIcon?: boolean;
-  rightSection?: React.ReactNode;
-  showClearButton?: boolean;
-  onClear?: () => void;
+  prefixText?: string
+  leftSearchIcon?: boolean
+  rightSection?: React.ReactNode
+  showClearButton?: boolean
+  onClear?: () => void
 }
 const InputTypeIn = React.forwardRef<HTMLInputElement, InputTypeInProps>(
   (
@@ -88,31 +88,31 @@ const InputTypeIn = React.forwardRef<HTMLInputElement, InputTypeInProps>(
       readOnly,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const localInputRef = React.useRef<HTMLInputElement | null>(null);
-    const disabled = variant === "disabled";
-    const isReadOnlyVariant = variant === "readOnly";
-    const isReadOnly = isReadOnlyVariant || readOnly;
+    const localInputRef = React.useRef<HTMLInputElement | null>(null)
+    const disabled = variant === "disabled"
+    const isReadOnlyVariant = variant === "readOnly"
+    const isReadOnly = isReadOnlyVariant || readOnly
 
     // Combine forwarded ref with local ref
     const setInputRef = React.useCallback(
       (node: HTMLInputElement | null) => {
-        localInputRef.current = node;
+        localInputRef.current = node
         if (typeof ref === "function") {
-          ref(node);
+          ref(node)
         } else if (ref) {
-          (ref as React.MutableRefObject<HTMLInputElement | null>).current =
-            node;
+          ;(ref as React.MutableRefObject<HTMLInputElement | null>).current =
+            node
         }
       },
-      [ref]
-    );
+      [ref],
+    )
 
     const handleClear = React.useCallback(() => {
       if (onClear) {
-        onClear();
-        return;
+        onClear()
+        return
       }
 
       onChange?.({
@@ -121,18 +121,18 @@ const InputTypeIn = React.forwardRef<HTMLInputElement, InputTypeInProps>(
         type: "change",
         bubbles: true,
         cancelable: true,
-      } as React.ChangeEvent<HTMLInputElement>);
-    }, [onClear, onChange]);
+      } as React.ChangeEvent<HTMLInputElement>)
+    }, [onClear, onChange])
 
     return (
       <div
         className={cn(
           "flex flex-row items-center justify-between flex-1 h-fit p-1.5 rounded-08 relative w-full",
           wrapperClasses[variant],
-          className
+          className,
         )}
         onClick={() => {
-          localInputRef.current?.focus();
+          localInputRef.current?.focus()
         }}
       >
         {leftSearchIcon && (
@@ -159,7 +159,7 @@ const InputTypeIn = React.forwardRef<HTMLInputElement, InputTypeInProps>(
           className={cn(
             "w-full h-[1.5rem] bg-transparent p-0.5 focus:outline-none",
             innerClasses[variant],
-            textClasses[variant]
+            textClasses[variant],
           )}
           {...props}
         />
@@ -177,9 +177,9 @@ const InputTypeIn = React.forwardRef<HTMLInputElement, InputTypeInProps>(
 
         {rightSection}
       </div>
-    );
-  }
-);
-InputTypeIn.displayName = "InputTypeIn";
+    )
+  },
+)
+InputTypeIn.displayName = "InputTypeIn"
 
-export default InputTypeIn;
+export default InputTypeIn

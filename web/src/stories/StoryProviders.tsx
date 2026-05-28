@@ -1,26 +1,26 @@
-"use client";
+"use client"
 
-import type { ReactNode } from "react";
-import AppProvider from "@/providers/AppProvider";
-import { ProjectsProvider } from "@/providers/ProjectsContext";
-import { MODAL_ROOT_ID } from "@/lib/constants";
-import { ThemeProvider } from "next-themes";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { PHProvider } from "@/app/providers";
-import { fixtures } from "@/stories/fixtures";
-import type { AuthTypeMetadata } from "@/lib/userSS";
-import type { CombinedSettings } from "@/interfaces/settings";
-import type { User } from "@/lib/types";
+import type { ReactNode } from "react"
+import AppProvider from "@/providers/AppProvider"
+import { ProjectsProvider } from "@/providers/ProjectsContext"
+import { MODAL_ROOT_ID } from "@/lib/constants"
+import { ThemeProvider } from "next-themes"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { PHProvider } from "@/app/providers"
+import { fixtures } from "@/stories/fixtures"
+import type { AuthTypeMetadata } from "@/lib/userSS"
+import type { CombinedSettings } from "@/interfaces/settings"
+import type { User } from "@/lib/types"
 
-type StorybookTheme = "light" | "dark";
+type StorybookTheme = "light" | "dark"
 
 export interface StoryProvidersProps {
-  children: ReactNode;
-  forcedTheme?: StorybookTheme;
-  folded?: boolean;
-  user?: User | null;
-  settings?: CombinedSettings;
-  authTypeMetadata?: AuthTypeMetadata;
+  children: ReactNode
+  forcedTheme?: StorybookTheme
+  folded?: boolean
+  user?: User | null
+  settings?: CombinedSettings
+  authTypeMetadata?: AuthTypeMetadata
 }
 
 export default function StoryProviders({
@@ -57,5 +57,5 @@ export default function StoryProviders({
         </TooltipProvider>
       </div>
     </ThemeProvider>
-  );
+  )
 }

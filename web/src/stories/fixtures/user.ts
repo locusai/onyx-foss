@@ -1,6 +1,6 @@
-import { AuthTypeMetadata } from "@/lib/userSS";
-import { AuthType } from "@/lib/constants";
-import { ThemePreference, UserRole, type User } from "@/lib/types";
+import { AuthTypeMetadata } from "@/lib/userSS"
+import { AuthType } from "@/lib/constants"
+import { ThemePreference, UserRole, type User } from "@/lib/types"
 
 export const storybookUser = {
   id: "user_storybook_1",
@@ -23,7 +23,7 @@ export const storybookUser = {
     chat_background: null,
     default_app_mode: "CHAT",
   },
-} satisfies User;
+} satisfies User
 
 export const storybookAuthTypeMetadata = {
   // OIDC/SAML skip the periodic token refresh call in `useTokenRefresh`.
@@ -34,5 +34,4 @@ export const storybookAuthTypeMetadata = {
   passwordMinLength: 8,
   hasUsers: true,
   oauthEnabled: true,
-} satisfies AuthTypeMetadata;
-
+} satisfies AuthTypeMetadata

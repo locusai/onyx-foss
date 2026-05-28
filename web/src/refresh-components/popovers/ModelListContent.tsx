@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   useEffect,
@@ -7,32 +7,32 @@ import {
   useState,
   type ReactNode,
   type RefObject,
-} from "react";
-import { PopoverMenu } from "@/refresh-components/Popover";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
-import Text from "@/refresh-components/texts/Text";
-import { SvgCheck, SvgChevronDown, SvgChevronRight } from "@opal/icons";
-import { Section } from "@/layouts/general-layouts";
-import { LLMOption } from "./interfaces";
-import { buildLlmOptions, groupLlmOptions } from "./LLMPopover";
-import LineItem from "@/refresh-components/buttons/LineItem";
-import { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces";
+} from "react"
+import { PopoverMenu } from "@/refresh-components/Popover"
+import InputTypeIn from "@/refresh-components/inputs/InputTypeIn"
+import Text from "@/refresh-components/texts/Text"
+import { SvgCheck, SvgChevronDown, SvgChevronRight } from "@opal/icons"
+import { Section } from "@/layouts/general-layouts"
+import { LLMOption } from "./interfaces"
+import { buildLlmOptions, groupLlmOptions } from "./LLMPopover"
+import LineItem from "@/refresh-components/buttons/LineItem"
+import { LLMProviderDescriptor } from "@/app/admin/configuration/llm/interfaces"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/refresh-components/Collapsible";
+} from "@/refresh-components/Collapsible"
 
 export interface ModelListContentProps {
-  llmProviders: LLMProviderDescriptor[] | undefined;
-  currentModelName?: string;
-  requiresImageInput?: boolean;
-  onSelect: (option: LLMOption) => void;
-  isSelected: (option: LLMOption) => boolean;
-  isDisabled?: (option: LLMOption) => boolean;
-  scrollContainerRef?: RefObject<HTMLDivElement | null>;
-  isLoading?: boolean;
-  footer?: ReactNode;
+  llmProviders: LLMProviderDescriptor[] | undefined
+  currentModelName?: string
+  requiresImageInput?: boolean
+  onSelect: (option: LLMOption) => void
+  isSelected: (option: LLMOption) => boolean
+  isDisabled?: (option: LLMOption) => boolean
+  scrollContainerRef?: RefObject<HTMLDivElement | null>
+  isLoading?: boolean
+  footer?: ReactNode
 }
 
 export default function ModelListContent({
@@ -46,77 +46,77 @@ export default function ModelListContent({
   isLoading,
   footer,
 }: ModelListContentProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const internalScrollRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = externalScrollRef ?? internalScrollRef;
+  const [searchQuery, setSearchQuery] = useState("")
+  const internalScrollRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = externalScrollRef ?? internalScrollRef
 
   const llmOptions = useMemo(
     () => buildLlmOptions(llmProviders, currentModelName),
-    [llmProviders, currentModelName]
-  );
+    [llmProviders, currentModelName],
+  )
 
   const filteredOptions = useMemo(() => {
-    let result = llmOptions;
+    let result = llmOptions
     if (requiresImageInput) {
-      result = result.filter((opt) => opt.supportsImageInput);
+      result = result.filter((opt) => opt.supportsImageInput)
     }
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery.toLowerCase()
       result = result.filter(
         (opt) =>
           opt.displayName.toLowerCase().includes(query) ||
           opt.modelName.toLowerCase().includes(query) ||
-          (opt.vendor && opt.vendor.toLowerCase().includes(query))
-      );
+          (opt.vendor && opt.vendor.toLowerCase().includes(query)),
+      )
     }
-    return result;
-  }, [llmOptions, searchQuery, requiresImageInput]);
+    return result
+  }, [llmOptions, searchQuery, requiresImageInput])
 
   const groupedOptions = useMemo(
     () => groupLlmOptions(filteredOptions),
-    [filteredOptions]
-  );
+    [filteredOptions],
+  )
 
   const defaultGroupKey = useMemo(() => {
     for (const group of groupedOptions) {
       if (group.options.some((opt) => isSelected(opt))) {
-        return group.key;
+        return group.key
       }
     }
-    return groupedOptions[0]?.key ?? "";
-  }, [groupedOptions, isSelected]);
+    return groupedOptions[0]?.key ?? ""
+  }, [groupedOptions, isSelected])
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set([defaultGroupKey])
-  );
+    new Set([defaultGroupKey]),
+  )
 
   useEffect(() => {
-    setExpandedGroups(new Set([defaultGroupKey]));
-  }, [defaultGroupKey]);
+    setExpandedGroups(new Set([defaultGroupKey]))
+  }, [defaultGroupKey])
 
-  const isSearching = searchQuery.trim().length > 0;
+  const isSearching = searchQuery.trim().length > 0
 
   const toggleGroup = (key: string) => {
-    if (isSearching) return;
+    if (isSearching) return
     setExpandedGroups((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
-  const isGroupOpen = (key: string) => isSearching || expandedGroups.has(key);
+  const isGroupOpen = (key: string) => isSearching || expandedGroups.has(key)
 
   const renderModelItem = (option: LLMOption) => {
-    const selected = isSelected(option);
-    const disabled = isDisabled?.(option) ?? false;
+    const selected = isSelected(option)
+    const disabled = isDisabled?.(option) ?? false
 
-    const capabilities: string[] = [];
-    if (option.supportsReasoning) capabilities.push("Reasoning");
-    if (option.supportsImageInput) capabilities.push("Vision");
+    const capabilities: string[] = []
+    if (option.supportsReasoning) capabilities.push("Reasoning")
+    if (option.supportsImageInput) capabilities.push("Vision")
     const description =
-      capabilities.length > 0 ? capabilities.join(", ") : undefined;
+      capabilities.length > 0 ? capabilities.join(", ") : undefined
 
     return (
       <LineItem
@@ -133,8 +133,8 @@ export default function ModelListContent({
       >
         {option.displayName}
       </LineItem>
-    );
-  };
+    )
+  }
 
   return (
     <Section gap={0.5}>
@@ -166,7 +166,7 @@ export default function ModelListContent({
                   </Section>,
                 ]
               : groupedOptions.map((group) => {
-                  const open = isGroupOpen(group.key);
+                  const open = isGroupOpen(group.key)
                   return (
                     <Collapsible
                       key={group.key}
@@ -196,11 +196,11 @@ export default function ModelListContent({
                         </Section>
                       </CollapsibleContent>
                     </Collapsible>
-                  );
+                  )
                 })}
       </PopoverMenu>
 
       {footer}
     </Section>
-  );
+  )
 }
