@@ -121,12 +121,14 @@ interface PopoverContentProps
   > {
   width?: PopoverWidths;
   ref?: React.Ref<React.ComponentRef<typeof PopoverPrimitive.Content>>;
+  className?: string;
 }
 function PopoverContent({
   width = "fit",
   align = "center",
   sideOffset = 4,
   ref,
+  className,
   ...props
 }: PopoverContentProps) {
   return (
@@ -139,7 +141,8 @@ function PopoverContent({
         className={cn(
           "bg-background-neutral-00 p-1 z-popover rounded-12 overflow-hidden border shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           "max-h-[var(--radix-popover-content-available-height)]",
-          widthClasses[width]
+          widthClasses[width],
+          className
         )}
         {...props}
       />
@@ -199,7 +202,7 @@ function SeparatorHelper() {
  * ```
  */
 export interface PopoverMenuProps {
-  children?: React.ReactNode[];
+  children?: React.ReactNode;
   footer?: React.ReactNode;
 
   // Ref for the scrollable container (useful for programmatic scrolling)
@@ -212,9 +215,9 @@ export function PopoverMenu({
 }: PopoverMenuProps) {
   if (!children) return null;
 
-  const definedChildren = children.filter(
-    (child) => child !== undefined && child !== false
-  );
+  const definedChildren = (
+    Array.isArray(children) ? children : [children]
+  ).filter((child) => child !== undefined && child !== false);
   const filteredChildren = definedChildren.filter((child, index) => {
     if (child !== null) return true;
     return index !== 0 && index !== definedChildren.length - 1;
