@@ -237,7 +237,6 @@ export default function LineItem({
   if (href) {
     return (
       <Link
-        ref={ref as React.Ref<HTMLAnchorElement>}
         href={href as Route}
         className={lineItemClassName}
         data-selected={selected}
