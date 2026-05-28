@@ -1,9 +1,9 @@
-import type { ConnectorCredentialPairStatus } from "@/app/admin/connector/[ccPairId]/types";
+import type { ConnectorCredentialPairStatus } from "@/app/admin/connector/[ccPairId]/types"
 import {
   ValidSources,
   type CCPairBasicInfo,
   type FederatedConnectorDetail,
-} from "@/lib/types";
+} from "@/lib/types"
 
 export const storybookCcPairs = [
   {
@@ -11,7 +11,7 @@ export const storybookCcPairs = [
     source: ValidSources.Slack,
     status: "ACTIVE" as ConnectorCredentialPairStatus,
   },
-] satisfies CCPairBasicInfo[];
+] satisfies CCPairBasicInfo[]
 
 export const storybookFederatedConnectors =
-  [] satisfies FederatedConnectorDetail[];
+  [] satisfies FederatedConnectorDetail[]

@@ -1,7 +1,4 @@
-import {
-  ChatSessionSharedStatus,
-  type ChatSession,
-} from "@/app/app/interfaces";
+import { ChatSessionSharedStatus, type ChatSession } from "@/app/app/interfaces"
 
 export const storybookChatSessions = [
   {
@@ -26,5 +23,4 @@ export const storybookChatSessions = [
     current_alternate_model: "",
     current_temperature_override: null,
   },
-] satisfies ChatSession[];
-
+] satisfies ChatSession[]

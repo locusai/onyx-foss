@@ -1,4 +1,3 @@
-import type { Notification } from "@/interfaces/settings";
+import type { Notification } from "@/interfaces/settings"
 
-export const storybookNotifications = [] satisfies Notification[];
-
+export const storybookNotifications = [] satisfies Notification[]
