@@ -53,6 +53,8 @@ settings.json
 .terraform.lock.hcl
 
 node_modules
+.onyx-package/
+*.tgz
 
 # MCP configs
 .playwright-mcp

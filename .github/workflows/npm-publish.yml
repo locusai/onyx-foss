@@ -1,0 +1,143 @@
+name: NPM Publish
+
+on:
+  push:
+    tags:
+      - "v*-ike*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: false
+
+      - name: Enforce version branch release lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TAG_SHA="${GITHUB_SHA}"
+          VERSION_REF="version/onyx-foss-${TAG_VERSION}"
+          git fetch --no-tags origin \
+            "+refs/heads/${VERSION_REF}:refs/remotes/origin/${VERSION_REF}" \
+            +refs/heads/integration/ike:refs/remotes/origin/integration/ike
+          VERSION_SHA="$(git rev-parse "origin/${VERSION_REF}")"
+          INTEGRATION_SHA="$(git rev-parse origin/integration/ike)"
+          echo "Lineage check context: tag=${GITHUB_REF_NAME} tag_sha=${TAG_SHA}"
+          echo "Lineage check refs: origin/${VERSION_REF}=${VERSION_SHA} origin/integration/ike=${INTEGRATION_SHA}"
+          if [ "$TAG_SHA" != "$VERSION_SHA" ]; then
+            echo "Lineage check failed: tag commit ${TAG_SHA} does not equal origin/${VERSION_REF} (${VERSION_SHA})."
+            exit 1
+          fi
+          echo "Lineage check passed: tag commit equals origin/${VERSION_REF}."
+          if [ "$TAG_SHA" = "$INTEGRATION_SHA" ]; then
+            echo "Lineage check passed: version branch is the current integration head."
+          else
+            echo "Lineage check note: version branch is a historical release head, not the current integration head."
+          fi
+
+      - name: Setup Node.js for GitHub Packages
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # ratchet:actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@locusai"
+
+      - name: Validate semver tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          SEMVER_REGEX='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-([0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*))?(\+([0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*))?$'
+          if ! [[ "$TAG_VERSION" =~ $SEMVER_REGEX ]]; then
+            echo "Tag version is not valid semver: $TAG_VERSION"
+            exit 1
+          fi
+
+      - name: Ensure version is not already published
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if npm view "@locusai/onyx-foss@${TAG_VERSION}" version --registry "https://npm.pkg.github.com" >/dev/null 2>&1; then
+            echo "@locusai/onyx-foss@${TAG_VERSION} is already published on GitHub Packages."
+            exit 1
+          fi
+          echo "Publishing @locusai/onyx-foss@${TAG_VERSION}"
+
+      - name: Build package tarball
+        id: build-package
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          OUT_DIR="${RUNNER_TEMP}/onyx-foss-package"
+          mkdir -p "$OUT_DIR"
+          node scripts/ike-package/build-onyx-foss-package.mjs \
+            --version "$TAG_VERSION" \
+            --out-dir "$OUT_DIR" \
+            --quiet
+          TARBALL_PATH="$(find "$OUT_DIR" -maxdepth 1 -type f -name '*.tgz' -print | sort | tail -n 1)"
+          if [[ -z "$TARBALL_PATH" ]]; then
+            echo "Package tarball not found in $OUT_DIR." >&2
+            exit 1
+          fi
+          echo "path=$TARBALL_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve publish dist-tag
+        id: resolve-publish-tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          BASE_VERSION="${TAG_VERSION%%-*}"
+          BASE_DIST_TAG="ike-${BASE_VERSION//./-}"
+          PRERELEASE="$(printf '%s' "$TAG_VERSION" | sed -nE 's/^[0-9]+\.[0-9]+\.[0-9]+-([^+]+)(\+.*)?$/\1/p')"
+          if [ -z "$PRERELEASE" ]; then
+            echo "dist_tag=" >> "$GITHUB_OUTPUT"
+            echo "base_dist_tag=" >> "$GITHUB_OUTPUT"
+            echo "No prerelease suffix detected; publishing with npm default tag."
+            exit 0
+          fi
+          if [[ "$TAG_VERSION" =~ -ike\.beta\. ]]; then
+            DIST_TAG="beta"
+          elif [[ "$TAG_VERSION" =~ -ike\.rc\. ]]; then
+            DIST_TAG="rc"
+          elif [[ "$TAG_VERSION" =~ -ike\.dev\. ]]; then
+            DIST_TAG="dev"
+          else
+            DIST_TAG="${PRERELEASE%%.*}"
+          fi
+          echo "dist_tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
+          echo "base_dist_tag=$BASE_DIST_TAG" >> "$GITHUB_OUTPUT"
+          echo "Using npm dist-tag: $DIST_TAG"
+          echo "Using npm stable-base dist-tag: $BASE_DIST_TAG"
+
+      - name: Publish package
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TARBALL_PATH="${PUBLISH_TARBALL_PATH}"
+          if [ -n "${NPM_PUBLISH_DIST_TAG:-}" ]; then
+            npm publish "$TARBALL_PATH" --ignore-scripts --tag "$NPM_PUBLISH_DIST_TAG" --registry "https://npm.pkg.github.com"
+          else
+            npm publish "$TARBALL_PATH" --ignore-scripts --registry "https://npm.pkg.github.com"
+          fi
+          if [ -n "${NPM_BASE_DIST_TAG:-}" ]; then
+            npm dist-tag add "@locusai/onyx-foss@${TAG_VERSION}" "$NPM_BASE_DIST_TAG" --registry "https://npm.pkg.github.com"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_PUBLISH_DIST_TAG: ${{ steps.resolve-publish-tag.outputs.dist_tag }}
+          NPM_BASE_DIST_TAG: ${{ steps.resolve-publish-tag.outputs.base_dist_tag }}
+          PUBLISH_TARBALL_PATH: ${{ steps.build-package.outputs.path }}
